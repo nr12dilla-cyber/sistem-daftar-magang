@@ -3,21 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Pendaftar;
+use App\Models\Pendaftar; // Pastikan Model mengarah ke Pendaftar
 use Illuminate\Support\Facades\File;
 
 class PendaftaranController extends Controller
 {
     /**
-     * 1. TAMPILKAN FORMULIR (Mencegah Error index undefined)
+     * 1. TAMPILKAN FORMULIR & FITUR CEK EMAIL (DI ATAS)
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('form_pendaftaran');
+        $hasilCek = null;
+
+        // Logika untuk menangkap input 'email_cek' dari form status
+        if ($request->has('email_cek') && $request->email_cek != '') {
+            // Mencari data berdasarkan email pada tabel pendaftars
+            $hasilCek = Pendaftar::where('email', $request->email_cek)->first();
+        }
+
+        // Mengirimkan variabel $hasilCek ke view form_pendaftaran
+        return view('form_pendaftaran', compact('hasilCek'));
     }
 
     /**
-     * 2. DASHBOARD (Statistik & Grafik)
+     * 2. DASHBOARD ADMIN (Statistik & Grafik)
      */
     public function adminDashboard()
     {
@@ -39,7 +48,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 3. TABEL DATA (Manajemen Pendaftar)
+     * 3. DATA PENDAFTAR (Tabel Admin)
      */
     public function dataPendaftar()
     {
@@ -48,7 +57,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 4. SIMPAN DATA (Tombol Kirim)
+     * 4. SIMPAN PENDAFTARAN BARU
      */
     public function store(Request $request)
     {
@@ -74,14 +83,14 @@ class PendaftaranController extends Controller
             'posisi' => $request->posisi,
             'foto' => $fotoName,
             'surat' => $suratName,
-            'status' => 'Pending',
+            'status' => 'Pending', // Status default saat mendaftar
         ]);
 
         return redirect()->back()->with('success', 'Pendaftaran berhasil dikirim!');
     }
 
     /**
-     * 5. UPDATE STATUS (Tombol Terima & Tolak)
+     * 5. UPDATE STATUS (Terima/Tolak)
      */
     public function updateStatus($id, $status)
     {
@@ -90,7 +99,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 6. HAPUS DATA (Tombol Hapus & File Fisik)
+     * 6. HAPUS DATA
      */
     public function destroy($id)
     {
@@ -104,6 +113,6 @@ class PendaftaranController extends Controller
         }
 
         $p->delete();
-        return redirect()->back()->with('success', 'Data berhasil dihapus selamanya!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
 }
