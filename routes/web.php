@@ -25,14 +25,22 @@ Route::post('/cek-status', [PendaftaranController::class, 'cekStatus'])->name('p
 Route::middleware(['auth', 'verified'])->group(function () {
     
     // MENU 1: Dashboard (Statistik & Grafik)
-    // Memanggil fungsi adminDashboard()
     Route::get('/dashboard', [PendaftaranController::class, 'adminDashboard'])->name('dashboard');
 
     // MENU 2: Data Pendaftar (Tabel Manajemen Lengkap)
-    // Memanggil fungsi dataPendaftar() yang baru dibuat
     Route::get('/dashboard/pendaftar', [PendaftaranController::class, 'dataPendaftar'])->name('admin.pendaftar');
 
-    // --- AKSI MANAJEMEN ---
+    // MENU 3: Tambah Admin Baru
+    Route::get('/dashboard/tambah-admin', [PendaftaranController::class, 'formTambahAdmin'])->name('admin.register');
+    Route::post('/dashboard/tambah-admin', [PendaftaranController::class, 'simpanAdmin'])->name('admin.register.store');
+
+    // MENU 4: Kelola Admin
+    Route::get('/dashboard/kelola-admin', [PendaftaranController::class, 'adminManage'])->name('admin.manage');
+    
+    // FITUR BARU: Hapus Admin (Tambahkan ini)
+    Route::delete('/dashboard/kelola-admin/{id}', [PendaftaranController::class, 'hapusAdmin'])->name('admin.destroy');
+
+    // --- AKSI MANAJEMEN PENDAFTAR ---
     
     // Update Status: Menangani Terima & Tolak
     Route::patch('/pendaftaran/status/{id}/{status}', [PendaftaranController::class, 'updateStatus'])

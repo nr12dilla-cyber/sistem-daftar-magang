@@ -4,17 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pendaftar;
+use App\Models\User; // Ditambahkan untuk proses registrasi admin
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash; // Ditambahkan untuk enkripsi password
+use Illuminate\Validation\Rules; // Ditambahkan untuk validasi password standar Laravel
 
 class AdminController extends Controller
 {
     /**
      * DASHBOARD UTAMA
-     * Menampilkan statistik box dan data grafik bulanan
      */
     public function adminDashboard()
     {
-        // Mengambil angka statistik untuk kotak di dashboard
         $stats = [
             'total' => Pendaftar::count(),
             'pending' => Pendaftar::where('status', 'Pending')->count(),
@@ -22,7 +23,6 @@ class AdminController extends Controller
             'ditolak' => Pendaftar::where('status', 'Ditolak')->count(),
         ];
 
-        // Menyiapkan data untuk grafik batang/garis
         $dataGrafik = ['diterima' => [], 'ditolak' => [], 'pending' => []];
         for ($m = 1; $m <= 12; $m++) {
             $dataGrafik['diterima'][] = Pendaftar::whereMonth('created_at', $m)->whereYear('created_at', date('Y'))->where('status', 'Diterima')->count();
@@ -34,14 +34,40 @@ class AdminController extends Controller
     }
 
     /**
+     * FORM TAMBAH ADMIN BARU (INTERNAL)
+     */
+    public function formTambahAdmin()
+    {
+        return view('admin.tambah-admin');
+    }
+
+    /**
+     * SIMPAN ADMIN BARU KE DATABASE
+     */
+    public function simpanAdmin(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Admin baru berhasil ditambahkan!');
+    }
+
+    /**
      * TABEL MANAJEMEN PENDAFTAR
-     * Menampilkan daftar semua orang yang mendaftar magang
      */
     public function dataPendaftar(Request $request)
     {
         $query = Pendaftar::query();
         
-        // Fungsi pencarian nama jika dibutuhkan
         if ($request->search) {
             $query->where('nama', 'like', '%' . $request->search . '%');
         }
@@ -53,7 +79,6 @@ class AdminController extends Controller
 
     /**
      * UPDATE STATUS (TERIMA/TOLAK)
-     * Fungsi yang dijalankan saat tombol Terima atau Tolak diklik
      */
     public function updateStatus($id, $status)
     {
@@ -65,13 +90,11 @@ class AdminController extends Controller
 
     /**
      * HAPUS DATA
-     * Menghapus pendaftar sekaligus file foto dan PDF-nya dari folder uploads
      */
     public function destroy($id)
     {
         $p = Pendaftar::findOrFail($id);
         
-        // Hapus file fisik agar storage tidak penuh
         if ($p->foto && File::exists(public_path('uploads/foto/'.$p->foto))) {
             File::delete(public_path('uploads/foto/'.$p->foto));
         }

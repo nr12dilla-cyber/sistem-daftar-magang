@@ -3,25 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Pendaftar; // Pastikan Model mengarah ke Pendaftar
+use App\Models\Pendaftar;
+use App\Models\User; // Tambahkan ini untuk model User
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash; // Tambahkan ini untuk enkripsi password
+use Illuminate\Support\Facades\Auth; // Tambahkan ini untuk cek login
 
 class PendaftaranController extends Controller
 {
     /**
-     * 1. TAMPILKAN FORMULIR & FITUR CEK EMAIL (DI ATAS)
+     * 1. TAMPILKAN FORMULIR & FITUR CEK EMAIL
      */
     public function index(Request $request)
     {
         $hasilCek = null;
-
-        // Logika untuk menangkap input 'email_cek' dari form status
         if ($request->has('email_cek') && $request->email_cek != '') {
-            // Mencari data berdasarkan email pada tabel pendaftars
             $hasilCek = Pendaftar::where('email', $request->email_cek)->first();
         }
-
-        // Mengirimkan variabel $hasilCek ke view form_pendaftaran
         return view('form_pendaftaran', compact('hasilCek'));
     }
 
@@ -57,6 +55,57 @@ class PendaftaranController extends Controller
     }
 
     /**
+     * --- FITUR KELOLA ADMIN ---
+     */
+
+    // Menampilkan daftar semua admin
+    public function adminManage()
+    {
+        $admins = User::all(); 
+        return view('admin.manage', compact('admins'));
+    }
+
+    // Menampilkan form tambah admin baru
+    public function formTambahAdmin()
+    {
+        return view('admin.tambah_admin');
+    }
+
+    // Menyimpan data admin baru
+    public function simpanAdmin(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('admin.manage')->with('success', 'Admin baru berhasil ditambahkan!');
+    }
+
+    // Menghapus data admin (FUNGSI BARU)
+    public function hapusAdmin($id)
+    {
+        // Cari user berdasarkan ID
+        $user = User::findOrFail($id);
+
+        // Proteksi: Jangan biarkan admin menghapus dirinya sendiri
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri!');
+        }
+
+        $user->delete();
+
+        return redirect()->back()->with('success', 'Akun admin berhasil dihapus!');
+    }
+
+    /**
      * 4. SIMPAN PENDAFTARAN BARU
      */
     public function store(Request $request)
@@ -83,7 +132,7 @@ class PendaftaranController extends Controller
             'posisi' => $request->posisi,
             'foto' => $fotoName,
             'surat' => $suratName,
-            'status' => 'Pending', // Status default saat mendaftar
+            'status' => 'Pending',
         ]);
 
         return redirect()->back()->with('success', 'Pendaftaran berhasil dikirim!');
@@ -99,7 +148,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 6. HAPUS DATA
+     * 6. HAPUS DATA PENDAFTAR
      */
     public function destroy($id)
     {

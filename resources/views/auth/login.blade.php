@@ -66,7 +66,6 @@
             box-shadow: 0 15px 30px -5px rgba(0, 102, 204, 0.4);
         }
 
-        /* Style tombol mata agar pas di tengah input */
         .eye-button {
             position: absolute;
             right: 1.25rem;
@@ -159,16 +158,6 @@
                         Masuk Sekarang
                     </button>
                 </div>
-
-                <div class="text-center mt-12 pt-10 border-t border-slate-100">
-                    <p class="text-slate-500 font-semibold mb-2">Belum memiliki akun admin?</p>
-                    <a href="{{ route('register') }}" class="text-blue-600 font-black hover:text-blue-800 transition-colors text-lg inline-flex items-center gap-2">
-                        Daftar Akun Baru
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </a>
-                </div>
             </form>
         </div>
     </div>
@@ -182,7 +171,6 @@
 </footer>
 
 <script>
-    // Inisialisasi ikon Lucide
     lucide.createIcons();
 
     function togglePassword() {
@@ -197,7 +185,6 @@
             eyeIcon.setAttribute('data-lucide', 'eye');
         }
         
-        // Render ulang ikon setelah perubahan atribut
         lucide.createIcons();
     }
 </script>

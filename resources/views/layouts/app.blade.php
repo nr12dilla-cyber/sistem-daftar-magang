@@ -37,7 +37,7 @@
         
         /* Logo tanpa card/kotak putih */
         .logo-img {
-            height: 85px; /* Ukuran ditingkatkan agar lebih jelas */
+            height: 85px; 
             width: auto;
             margin: 0 auto 1.25rem;
             display: block;
@@ -105,6 +105,8 @@
             border-radius: 10px;
             font-weight: 700;
             transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
 
         .logout-btn:hover {
@@ -117,7 +119,7 @@
 
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="https://tse3.mm.bing.net/th/id/OIP.lT6599E9vZtjj81vWTllEwHaIO?pid=Api&P=0&h=180" alt="Logo" class="h-10 w-auto object-contain" width="300">
+            <img src="https://tse3.mm.bing.net/th/id/OIP.lT6599E9vZtjj81vWTllEwHaIO?pid=Api&P=0&h=180" alt="Logo" class="logo-img">
             
             <div class="sidebar-brand">B-Panel</div>
             <div class="sidebar-subtitle">Admin Dashboard</div>
@@ -134,6 +136,11 @@
             <a href="{{ route('admin.pendaftar') }}" class="nav-link {{ request()->routeIs('admin.pendaftar') ? 'active' : '' }}">
                 <span class="mr-3 text-xl">👥</span>
                 <span>Data Pendaftar</span>
+            </a>
+
+            <a href="{{ route('admin.manage') }}" class="nav-link {{ request()->routeIs('admin.manage') ? 'active' : '' }}">
+                <span class="mr-3 text-xl">🛡️</span>
+                <span>Kelola Admin</span>
             </a>
         </nav>
         
