@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin - Diskominfo Binjai</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -64,6 +65,25 @@
             transform: translateY(-3px);
             box-shadow: 0 15px 30px -5px rgba(0, 102, 204, 0.4);
         }
+
+        /* Style tombol mata agar pas di tengah input */
+        .eye-button {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .eye-button:hover {
+            color: var(--blue-primary);
+        }
     </style>
 </head>
 <body class="flex flex-col">
@@ -91,7 +111,7 @@
             
             <div class="relative z-10 flex flex-col items-center">
                 <div class="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl border border-white/20 p-4">
-                    <img src="{{ asset('images/logo-diskominfo.png') }}" alt="Logo" class="w-full h-full object-contain">
+                    <img src="https://tse3.mm.bing.net/th/id/OIP.lT6599E9vZtjj81vWTllEwHaIO?pid=Api&P=0&h=180" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 <h1 class="text-4xl font-black mb-3 tracking-tight" style="font-family: 'Poppins';">Login Admin</h1>
                 <p class="text-blue-50 text-base font-medium opacity-90 max-w-xl">Selamat datang kembali! Silahkan masuk untuk mengelola sistem informasi magang.</p>
@@ -118,8 +138,13 @@
 
                     <div class="space-y-2">
                         <label class="text-[12px] font-black text-slate-500 uppercase tracking-[0.1em] ml-1">Password</label>
-                        <input id="password" type="password" name="password" required
-                            class="form-input" placeholder="Masukkan password Anda">
+                        <div class="relative">
+                            <input id="password" type="password" name="password" required
+                                class="form-input pr-12" placeholder="Masukkan password Anda">
+                            <button type="button" class="eye-button" onclick="togglePassword()">
+                                <i id="eye-icon" data-lucide="eye" class="w-5 h-5"></i>
+                            </button>
+                        </div>
                         @error('password') <p class="text-red-500 text-xs mt-2 font-bold">{{ $message }}</p> @enderror
                     </div>
 
@@ -155,6 +180,27 @@
         <div class="h-1 w-12 bg-blue-200 rounded-full"></div>
     </div>
 </footer>
+
+<script>
+    // Inisialisasi ikon Lucide
+    lucide.createIcons();
+
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.setAttribute('data-lucide', 'eye');
+        }
+        
+        // Render ulang ikon setelah perubahan atribut
+        lucide.createIcons();
+    }
+</script>
 
 </body>
 </html>

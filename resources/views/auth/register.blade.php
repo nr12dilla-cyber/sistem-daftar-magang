@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Admin - Diskominfo Binjai</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -26,7 +27,6 @@
             z-index: 50;
         }
 
-        /* Ukuran Card Ditingkatkan */
         .card-auth-xl {
             background: white;
             border-radius: 3rem;
@@ -65,6 +65,23 @@
             transform: translateY(-3px);
             box-shadow: 0 15px 30px -5px rgba(0, 102, 204, 0.4);
         }
+
+        /* Style tambahan untuk tombol mata */
+        .eye-button {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .eye-button:hover {
+            color: var(--blue-primary);
+        }
     </style>
 </head>
 <body class="flex flex-col">
@@ -97,7 +114,7 @@
             
             <div class="relative z-10 flex flex-col items-center">
                 <div class="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl border border-white/20 p-4">
-                    <img src="{{ asset('images/logo-diskominfo.png') }}" alt="Logo" class="w-full h-full object-contain">
+                    <img src="https://tse3.mm.bing.net/th/id/OIP.lT6599E9vZtjj81vWTllEwHaIO?pid=Api&P=0&h=180" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 <h1 class="text-4xl font-black mb-3 tracking-tight" style="font-family: 'Poppins';">Pendaftaran Admin Baru</h1>
                 <p class="text-blue-50 text-base font-medium opacity-90 max-w-xl">Silahkan isi formulir di bawah untuk membuat akun administrator sistem informasi magang.</p>
@@ -125,15 +142,25 @@
 
                     <div class="space-y-2">
                         <label class="text-[12px] font-black text-slate-500 uppercase tracking-[0.1em] ml-1">Password</label>
-                        <input id="password" type="password" name="password" required
-                            class="form-input" placeholder="Buat password kuat">
+                        <div class="relative">
+                            <input id="password" type="password" name="password" required
+                                class="form-input pr-12" placeholder="Buat password kuat">
+                            <button type="button" class="eye-button" onclick="togglePassword('password', 'eye-icon-password')">
+                                <i id="eye-icon-password" data-lucide="eye" class="w-5 h-5"></i>
+                            </button>
+                        </div>
                         @error('password') <p class="text-red-500 text-xs mt-2 font-bold flex items-center gap-1"><span class="w-1 h-1 bg-red-500 rounded-full"></span> {{ $message }}</p> @enderror
                     </div>
 
                     <div class="space-y-2">
                         <label class="text-[12px] font-black text-slate-500 uppercase tracking-[0.1em] ml-1">Konfirmasi Password</label>
-                        <input id="password_confirmation" type="password" name="password_confirmation" required
-                            class="form-input" placeholder="Ulangi password">
+                        <div class="relative">
+                            <input id="password_confirmation" type="password" name="password_confirmation" required
+                                class="form-input pr-12" placeholder="Ulangi password">
+                            <button type="button" class="eye-button" onclick="togglePassword('password_confirmation', 'eye-icon-confirm')">
+                                <i id="eye-icon-confirm" data-lucide="eye" class="w-5 h-5"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -164,6 +191,27 @@
         <div class="h-1 w-12 bg-blue-200 rounded-full"></div>
     </div>
 </footer>
+
+<script>
+    // Inisialisasi ikon Lucide
+    lucide.createIcons();
+
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        
+        if (input.type === "password") {
+            input.type = "text";
+            icon.setAttribute("data-lucide", "eye-off");
+        } else {
+            input.type = "password";
+            icon.setAttribute("data-lucide", "eye");
+        }
+        
+        // Render ulang ikon setelah perubahan atribut
+        lucide.createIcons();
+    }
+</script>
 
 </body>
 </html>
