@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="mb-8">
         <h1 class="text-3xl font-800 text-slate-800 tracking-tight">Kelola Admin</h1>
-        <p class="text-slate-500 mt-1 font-medium">Manajemen akun administrator sistem B-Panel</p>
+        <p class="text-slate-500 mt-1 font-medium">Manajemen akun administrator</p>
     </div>
 
     <div class="mb-6 flex justify-end">
@@ -9,18 +9,6 @@
             <span>➕</span> Tambah Admin Baru
         </a>
     </div>
-
-    @if(session('success'))
-    <div class="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 rounded-r-xl font-medium">
-        {{ session('success') }}
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl font-medium">
-        {{ session('error') }}
-    </div>
-    @endif
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <table class="w-full text-left">
@@ -43,12 +31,9 @@
                     <td class="p-4 text-sm text-slate-600 font-medium">{{ $admin->email }}</td>
                     <td class="p-4 text-center">
                         @if($admin->id !== Auth::id())
-                            <form action="{{ route('admin.destroy', $admin->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus admin ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 mx-auto">
-                                    <span>🗑️</span> Hapus
-                                </button>
+                            <form action="{{ route('admin.destroy', $admin->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-red-600 font-bold text-xs bg-red-50 px-3 py-1.5 rounded-lg">🗑️ Hapus</button>
                             </form>
                         @else
                             <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">ANDA (AKTIF)</span>

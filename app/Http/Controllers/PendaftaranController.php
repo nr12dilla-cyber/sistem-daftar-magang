@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pendaftar;
-use App\Models\User; // Tambahkan ini untuk model User
+use App\Models\User;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Hash; // Tambahkan ini untuk enkripsi password
-use Illuminate\Support\Facades\Auth; // Tambahkan ini untuk cek login
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class PendaftaranController extends Controller
 {
@@ -57,21 +57,17 @@ class PendaftaranController extends Controller
     /**
      * --- FITUR KELOLA ADMIN ---
      */
-
-    // Menampilkan daftar semua admin
     public function adminManage()
     {
         $admins = User::all(); 
         return view('admin.manage', compact('admins'));
     }
 
-    // Menampilkan form tambah admin baru
     public function formTambahAdmin()
     {
         return view('admin.tambah_admin');
     }
 
-    // Menyimpan data admin baru
     public function simpanAdmin(Request $request)
     {
         $request->validate([
@@ -89,45 +85,51 @@ class PendaftaranController extends Controller
         return redirect()->route('admin.manage')->with('success', 'Admin baru berhasil ditambahkan!');
     }
 
-    // Menghapus data admin (FUNGSI BARU)
     public function hapusAdmin($id)
     {
-        // Cari user berdasarkan ID
         $user = User::findOrFail($id);
 
-        // Proteksi: Jangan biarkan admin menghapus dirinya sendiri
         if ($user->id === Auth::id()) {
             return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri!');
         }
 
         $user->delete();
-
         return redirect()->back()->with('success', 'Akun admin berhasil dihapus!');
     }
 
     /**
-     * 4. SIMPAN PENDAFTARAN BARU
+     * 4. SIMPAN PENDAFTARAN BARU (Sudah mendukung Nomor WA)
      */
     public function store(Request $request)
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:pendaftars,email',
+            'nomor_wa' => 'required|string|max:20', // Tambahan field nomor_wa
             'asal_sekolah' => 'required',
             'posisi' => 'required',
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'surat' => 'required|mimes:pdf|max:2048',
+            'foto' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'surat' => 'required|mimes:pdf|max:5120',
+        ], [
+            'email.unique' => 'Email ini sudah terdaftar. Silakan gunakan fitur "Cek Status" di samping.',
+            'foto.max' => 'Ukuran foto terlalu besar. Maksimal adalah 5MB.',
+            'surat.max' => 'Ukuran file PDF terlalu besar. Maksimal adalah 5MB.',
+            'surat.mimes' => 'Format file surat harus berupa PDF.',
         ]);
 
+        // Upload Foto
         $fotoName = time() . '_foto.' . $request->foto->extension();
         $request->foto->move(public_path('uploads/foto'), $fotoName);
 
+        // Upload Surat
         $suratName = time() . '_surat.' . $request->surat->extension();
         $request->surat->move(public_path('uploads/surat'), $suratName);
 
+        // Simpan ke Database
         Pendaftar::create([
             'nama' => $request->nama,
             'email' => $request->email,
+            'nomor_wa' => $request->nomor_wa, // Menyimpan nomor WA ke DB
             'asal_sekolah' => $request->asal_sekolah,
             'posisi' => $request->posisi,
             'foto' => $fotoName,
@@ -135,7 +137,7 @@ class PendaftaranController extends Controller
             'status' => 'Pending',
         ]);
 
-        return redirect()->back()->with('success', 'Pendaftaran berhasil dikirim!');
+        return redirect()->back()->with('success', 'Terima kasih ' . $request->nama . ', pendaftaran Anda berhasil terkirim dan akan segera diproses oleh admin.');
     }
 
     /**
@@ -144,7 +146,7 @@ class PendaftaranController extends Controller
     public function updateStatus($id, $status)
     {
         Pendaftar::findOrFail($id)->update(['status' => $status]);
-        return redirect()->back()->with('success', "Status berhasil diubah menjadi $status");
+        return redirect()->back()->with('success', "Status pendaftar berhasil diubah menjadi $status");
     }
 
     /**
@@ -154,6 +156,7 @@ class PendaftaranController extends Controller
     {
         $p = Pendaftar::findOrFail($id);
 
+        // Hapus file fisik dari folder uploads
         if ($p->foto && File::exists(public_path('uploads/foto/' . $p->foto))) {
             File::delete(public_path('uploads/foto/' . $p->foto));
         }
@@ -162,6 +165,6 @@ class PendaftaranController extends Controller
         }
 
         $p->delete();
-        return redirect()->back()->with('success', 'Data berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data pendaftar telah berhasil dihapus!');
     }
 }

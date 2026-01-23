@@ -15,6 +15,7 @@ class Pendaftar extends Model
         'nama', 
         'email', 
         'asal_sekolah', 
+        'nomor_wa', // <-- Tambahkan ini
         'posisi', 
         'foto', 
         'surat', 
