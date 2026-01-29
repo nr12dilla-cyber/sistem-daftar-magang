@@ -8,23 +8,42 @@ use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PendaftaranController extends Controller
 {
     /**
      * 1. TAMPILKAN FORMULIR & FITUR CEK EMAIL
+     * UPDATE: Menambahkan variabel 'statusCari' untuk memicu SweetAlert
      */
     public function index(Request $request)
     {
         $hasilCek = null;
+        $statusCari = false;
+
         if ($request->has('email_cek') && $request->email_cek != '') {
+            $statusCari = true; // Tandai bahwa user sedang melakukan pencarian
             $hasilCek = Pendaftar::where('email', $request->email_cek)->first();
         }
-        return view('form_pendaftaran', compact('hasilCek'));
+        
+        // Tambahkan statusCari ke dalam compact
+        return view('form_pendaftaran', compact('hasilCek', 'statusCari'));
     }
 
     /**
-     * 2. DASHBOARD ADMIN (Statistik & Grafik)
+     * 2. FITUR: CETAK PDF
+     */
+    public function cetak_pdf()
+    {
+        $pendaftars = Pendaftar::latest()->get();
+        $pdf = Pdf::loadView('admin.pendaftar_pdf', compact('pendaftars'))
+                  ->setPaper('a4', 'portrait'); 
+
+        return $pdf->stream('Laporan_Pendaftaran_Magang_' . date('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * 3. DASHBOARD ADMIN (Statistik & Grafik)
      */
     public function adminDashboard()
     {
@@ -33,6 +52,7 @@ class PendaftaranController extends Controller
             'pending' => Pendaftar::where('status', 'Pending')->count(),
             'diterima' => Pendaftar::where('status', 'Diterima')->count(),
             'ditolak' => Pendaftar::where('status', 'Ditolak')->count(),
+            'total_personil' => Pendaftar::sum('jumlah_anggota') ?? 0,
         ];
 
         $dataGrafik = ['diterima' => [], 'ditolak' => [], 'pending' => []];
@@ -46,125 +66,117 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 3. DATA PENDAFTAR (Tabel Admin)
+     * 4. DATA PENDAFTAR (Tabel Admin dengan Pagination 10)
      */
     public function dataPendaftar()
     {
-        $pendaftars = Pendaftar::latest()->get();
+        $pendaftars = Pendaftar::latest()->paginate(10); 
         return view('admin.data_pendaftar', compact('pendaftars'));
     }
 
     /**
-     * --- FITUR KELOLA ADMIN ---
+     * 5. UPDATE STATUS + REDIRECT WA
      */
-    public function adminManage()
+    public function updateStatus($id, $status)
     {
-        $admins = User::all(); 
-        return view('admin.manage', compact('admins'));
-    }
+        $pendaftar = Pendaftar::findOrFail($id);
+        $pendaftar->update(['status' => $status]);
 
-    public function formTambahAdmin()
-    {
-        return view('admin.tambah_admin');
-    }
-
-    public function simpanAdmin(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return redirect()->route('admin.manage')->with('success', 'Admin baru berhasil ditambahkan!');
-    }
-
-    public function hapusAdmin($id)
-    {
-        $user = User::findOrFail($id);
-
-        if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri!');
+        $nomor = preg_replace('/[^0-9]/', '', $pendaftar->nomor_wa);
+        if (str_starts_with($nomor, '0')) {
+            $nomor = '62' . substr($nomor, 1);
         }
 
-        $user->delete();
-        return redirect()->back()->with('success', 'Akun admin berhasil dihapus!');
+        if ($status == 'Diterima') {
+            $pesan = "Halo *" . $pendaftar->nama . "*, kami dari Diskominfo. Selamat! Anda dinyatakan *DITERIMA* untuk magang.";
+        } else {
+            $pesan = "Halo *" . $pendaftar->nama . "*, kami dari Diskominfo. Mohon maaf, pendaftaran magang Anda *DITOLAK*.";
+        }
+
+        return redirect("https://api.whatsapp.com/send?phone=" . $nomor . "&text=" . urlencode($pesan));
     }
 
     /**
-     * 4. SIMPAN PENDAFTARAN BARU (Sudah mendukung Nomor WA)
+     * 6. SIMPAN PENDAFTARAN BARU
      */
     public function store(Request $request)
     {
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:pendaftars,email',
-            'nomor_wa' => 'required|string|max:20', // Tambahan field nomor_wa
+            'nomor_wa' => 'required|string|max:20',
             'asal_sekolah' => 'required',
             'posisi' => 'required',
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'jumlah_anggota' => 'required|integer|min:1|max:10',
+            'foto' => 'required|array',
+            'foto.*' => 'image|mimes:jpeg,png,jpg|max:5120',
             'surat' => 'required|mimes:pdf|max:5120',
-        ], [
-            'email.unique' => 'Email ini sudah terdaftar. Silakan gunakan fitur "Cek Status" di samping.',
-            'foto.max' => 'Ukuran foto terlalu besar. Maksimal adalah 5MB.',
-            'surat.max' => 'Ukuran file PDF terlalu besar. Maksimal adalah 5MB.',
-            'surat.mimes' => 'Format file surat harus berupa PDF.',
         ]);
 
-        // Upload Foto
-        $fotoName = time() . '_foto.' . $request->foto->extension();
-        $request->foto->move(public_path('uploads/foto'), $fotoName);
+        $fotoNames = [];
+        if ($request->hasFile('foto')) {
+            foreach ($request->file('foto') as $index => $file) {
+                $name = time() . '_' . $index . '_' . uniqid() . '.' . $file->extension();
+                $file->move(public_path('uploads/foto'), $name);
+                $fotoNames[] = $name;
+            }
+        }
 
-        // Upload Surat
         $suratName = time() . '_surat.' . $request->surat->extension();
         $request->surat->move(public_path('uploads/surat'), $suratName);
 
-        // Simpan ke Database
         Pendaftar::create([
             'nama' => $request->nama,
             'email' => $request->email,
-            'nomor_wa' => $request->nomor_wa, // Menyimpan nomor WA ke DB
+            'nomor_wa' => $request->nomor_wa,
             'asal_sekolah' => $request->asal_sekolah,
             'posisi' => $request->posisi,
-            'foto' => $fotoName,
+            'jumlah_anggota' => $request->jumlah_anggota,
+            'foto' => $fotoNames,
             'surat' => $suratName,
             'status' => 'Pending',
         ]);
 
-        return redirect()->back()->with('success', 'Terima kasih ' . $request->nama . ', pendaftaran Anda berhasil terkirim dan akan segera diproses oleh admin.');
+        return redirect()->back()->with('success', 'Pendaftaran berhasil terkirim!');
     }
 
     /**
-     * 5. UPDATE STATUS (Terima/Tolak)
-     */
-    public function updateStatus($id, $status)
-    {
-        Pendaftar::findOrFail($id)->update(['status' => $status]);
-        return redirect()->back()->with('success', "Status pendaftar berhasil diubah menjadi $status");
-    }
-
-    /**
-     * 6. HAPUS DATA PENDAFTAR
+     * 7. HAPUS DATA PENDAFTAR
      */
     public function destroy($id)
     {
         $p = Pendaftar::findOrFail($id);
 
-        // Hapus file fisik dari folder uploads
-        if ($p->foto && File::exists(public_path('uploads/foto/' . $p->foto))) {
-            File::delete(public_path('uploads/foto/' . $p->foto));
+        if ($p->foto) {
+            $fotos = is_array($p->foto) ? $p->foto : json_decode($p->foto, true);
+            if ($fotos) {
+                foreach ($fotos as $f) {
+                    if (File::exists(public_path('uploads/foto/' . $f))) {
+                        File::delete(public_path('uploads/foto/' . $f));
+                    }
+                }
+            }
         }
+
         if ($p->surat && File::exists(public_path('uploads/surat/' . $p->surat))) {
             File::delete(public_path('uploads/surat/' . $p->surat));
         }
 
         $p->delete();
-        return redirect()->back()->with('success', 'Data pendaftar telah berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
+    }
+
+    public function adminManage() { $admins = User::all(); return view('admin.manage', compact('admins')); }
+    public function formTambahAdmin() { return view('admin.tambah_admin'); }
+    public function simpanAdmin(Request $request) {
+        $request->validate(['name' => 'required', 'email' => 'required|unique:users', 'password' => 'required|confirmed']);
+        User::create(['name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password)]);
+        return redirect()->route('admin.manage')->with('success', 'Admin berhasil ditambah!');
+    }
+    public function hapusAdmin($id) {
+        $user = User::findOrFail($id);
+        if ($user->id === Auth::id()) return redirect()->back()->with('error', 'Tidak bisa hapus diri sendiri!');
+        $user->delete();
+        return redirect()->back()->with('success', 'Admin dihapus!');
     }
 }

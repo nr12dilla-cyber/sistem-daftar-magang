@@ -6,182 +6,245 @@
     <title>Login Admin - Diskominfo Binjai</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --blue-primary: #0066cc;
-            --blue-dark: #004c99;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body { 
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            min-height: 100vh;
-        }
-
-        .nav-custom {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        /* UKURAN CARD DIKECILKAN */
-        .card-auth-compact {
-            background: white;
-            border-radius: 2rem; /* Radius disesuaikan */
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            height: 100vh;
             overflow: hidden;
-            border: 1px solid #e2e8f0;
-            width: 100%;
-            max-width: 450px; /* Batas lebar lebih kecil */
+            background-color: #ffffff;
         }
 
-        .header-gradient {
-            background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-dark) 100%);
+        .login-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Tombol Beranda di Sudut Kanan Atas */
+        .home-button {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .home-button:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            color: #0066cc;
+        }
+
+        /* Section Kiri */
+        .left-section {
+            flex: 1.2;
+            position: relative;
+            background: #003366; 
+            overflow: hidden;
+        }
+
+        .left-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.7;
+        }
+
+        .left-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 76, 153, 0.5) 0%, rgba(0, 31, 63, 0.7) 100%);
+            z-index: 1;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            color: white;
+            text-align: center;
+        }
+
+        .logo-box {
+            width: 110px;
+            height: 110px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            padding: 1.2rem;
+        }
+
+        .welcome-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Section Kanan */
+        .right-section {
+            flex: 1;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 2;
+            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 380px;
+            margin-left: 10%;
         }
 
         .form-input {
             width: 100%;
-            background-color: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
-            transition: all 0.2s;
+            padding: 1rem 1rem 1rem 3.2rem;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            transition: all 0.3s;
+            background: #f8fafc;
         }
 
         .form-input:focus {
-            border-color: var(--blue-primary);
             outline: none;
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.08);
+            border-color: #0066cc;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
         }
 
-        .btn-main {
-            background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-dark) 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-main:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(0, 102, 204, 0.4);
-        }
-
-        .eye-button {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            background: none;
+        .btn-login {
+            width: 100%;
+            padding: 1.1rem;
+            background: #0066cc;
+            color: white;
             border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+        }
+
+        .btn-login:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 1024px) {
+            .right-section { clip-path: none; }
+            .form-container { margin-left: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; }
+            .left-section { flex: 0 0 35%; }
+            .right-section { border-top-left-radius: 30px; margin-top: -30px; }
+            .welcome-text { font-size: 2rem; }
+            .home-button { top: 1rem; right: 1rem; }
         }
     </style>
 </head>
-<body class="flex flex-col">
-
-<nav class="nav-custom">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <img src="https://tse3.mm.bing.net/th/id/OIP.lT6599E9vZtjj81vWTllEwHaIO?pid=Api&P=0&h=180" alt="Logo" class="h-10 w-auto object-contain">
-            <div>
-                <p class="font-black text-slate-800 leading-none text-base tracking-tight">DISKOMINFO</p>
-                <p class="text-[9px] font-bold text-blue-600 tracking-[0.2em] uppercase">Kota Binjai</p>
-            </div>
-        </div>
-        <a href="{{ url('/') }}" class="text-xs font-bold text-slate-600 hover:text-blue-600 transition-all uppercase tracking-wider">
-            Beranda
+<body>
+    <div class="login-container">
+        <a href="/" class="home-button">
+            <i data-lucide="home" style="width: 18px; height: 18px;"></i>
+            <span>Beranda</span>
         </a>
-    </div>
-</nav>
 
-<main class="flex-grow flex items-center justify-center px-6 py-12">
-    <div class="card-auth-compact">
-        
-        <div class="header-gradient p-8 text-center text-white relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
-            
-            <div class="relative z-10 flex flex-col items-center">
-                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-xl p-3">
+        <div class="left-section">
+            <div class="left-content">
+                <div class="logo-box">
                     <img src="https://tse3.mm.bing.net/th/id/OIP.lT6599E9vZtjj81vWTllEwHaIO?pid=Api&P=0&h=180" alt="Logo" class="w-full h-full object-contain">
                 </div>
-                <h1 class="text-2xl font-black mb-1 tracking-tight" style="font-family: 'Poppins';">Login Admin</h1>
-                <p class="text-blue-50 text-xs font-medium opacity-80">Masuk ke sistem pengelola magang</p>
+                <h1 class="welcome-text">Selamat<br>Datang</h1>
+                <p class="mt-4 text-blue-100 tracking-[0.2em] font-medium uppercase text-sm">Sistem Pengelola Magang</p>
+                <p class="font-bold text-white text-lg mt-1">Diskominfo Kota Binjai</p>
             </div>
         </div>
 
-        <div class="p-8 md:p-10">
-            @if (session('status'))
-                <div class="mb-4 font-medium text-xs text-green-600 bg-green-50 p-3 rounded-lg border border-green-100 text-center">
-                    {{ session('status') }}
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login') }}" class="space-y-5">
-                @csrf
-
-                <div class="space-y-1.5">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.1em] ml-1">Email Instansi</label>
-                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                        class="form-input" placeholder="admin@binjaikota.go.id">
-                    @error('email') <p class="text-red-500 text-[10px] mt-1 font-bold ml-1">{{ $message }}</p> @enderror
+        <div class="right-section">
+            <div class="form-container">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold text-slate-800">Login Admin</h2>
+                    <p class="text-slate-500 mt-2">Gunakan akses resmi untuk masuk</p>
                 </div>
 
-                <div class="space-y-1.5">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.1em] ml-1">Password</label>
+                <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                    @csrf
                     <div class="relative">
-                        <input id="password" type="password" name="password" required
-                            class="form-input pr-10" placeholder="••••••••">
-                        <button type="button" class="eye-button" onclick="togglePassword()">
-                            <i id="eye-icon" data-lucide="eye" class="w-4 h-4"></i>
+                        <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                        <input type="email" name="email" class="form-input" placeholder="Email Instansi" required>
+                    </div>
+
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Kata Sandi" required>
+                        <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" onclick="togglePassword()">
+                            <i id="eye-icon" data-lucide="eye" class="w-5 h-5"></i>
                         </button>
                     </div>
-                    @error('password') <p class="text-red-500 text-[10px] mt-1 font-bold ml-1">{{ $message }}</p> @enderror
-                </div>
 
-                <div class="flex items-center justify-between ml-1 pt-1">
-                    <div class="flex items-center">
-                        <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
-                        <label for="remember_me" class="ms-2 text-[11px] font-semibold text-slate-600">Ingat saya</label>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="remember" class="w-4 h-4 text-blue-600 rounded">
+                        <label for="remember" class="text-sm text-slate-600 font-medium cursor-pointer">Ingat saya</label>
                     </div>
-                </div>
 
-                <div class="pt-4">
-                    <button type="submit" class="btn-main w-full py-3.5 text-white font-bold rounded-xl text-base shadow-lg transition-all active:scale-[0.98]">
-                        Masuk
+                    <button type="submit" class="btn-login shadow-lg shadow-blue-200">
+                        Masuk Ke Dashboard
                     </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</main>
 
-<footer class="py-8 text-center">
-    <p class="text-slate-400 text-[9px] font-black uppercase tracking-[0.3em]">© 2026 Diskominfo Kota Binjai</p>
-</footer>
-
-<script>
-    lucide.createIcons();
-
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = document.getElementById('eye-icon');
-
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.setAttribute('data-lucide', 'eye-off');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.setAttribute('data-lucide', 'eye');
-        }
+    <script>
         lucide.createIcons();
-    }
-</script>
-
+        function togglePassword() {
+            const pw = document.getElementById('password');
+            const icon = document.getElementById('eye-icon');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pw.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+    </script>
 </body>
 </html>

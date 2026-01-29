@@ -1,92 +1,310 @@
 <x-app-layout>
-    <div class="py-6 px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-                <a href="{{ route('admin.manage') }}" class="group inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Kembali ke Manajemen Akun
-                </a>
-                <h1 class="text-4xl font-black text-slate-900 tracking-tight">Tambah Administrator</h1>
-                <p class="text-slate-500 mt-1 text-base font-medium">Lengkapi formulir di bawah untuk mendaftarkan akun pengelola baru.</p>
-            </div>
+    <style>
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%);
+            border-radius: 20px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(30, 90, 142, 0.2);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+            transform: translateX(-3px);
+        }
+
+        .back-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            transition: transform 0.2s;
+        }
+
+        .back-link:hover .back-icon {
+            transform: translateX(-4px);
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.813rem;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f3f5;
+            overflow: hidden;
+        }
+
+        .form-top-accent {
+            height: 6px;
+            background: linear-gradient(90deg, #1e5a8e 0%, #15436b 100%);
+        }
+
+        .form-content {
+            padding: 32px 36px;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 0.938rem;
+            font-weight: 500;
+            color: #2d3748;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background: white;
+            border-color: #1e5a8e;
+            box-shadow: 0 0 0 3px rgba(30, 90, 142, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #a0aec0;
+        }
+
+        .form-footer {
+            margin-top: 32px;
+            padding-top: 28px;
+            border-top: 1px solid #f1f3f5;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-reset {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            color: #718096;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.938rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-submit {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%);
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.938rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(30, 90, 142, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #15436b 0%, #0d2f4d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 90, 142, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .form-content {
+                padding: 24px 20px;
+            }
             
-            <div class="hidden md:block">
-                <span class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-2xl text-sm font-bold border border-blue-100">
-                    <span class="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-                    Sesi Admin Aktif
+            .form-footer {
+                flex-direction: column;
+            }
+            
+            .btn-reset, .btn-submit {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <div class="form-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <a href="{{ route('admin.manage') }}" class="back-link">
+                <svg class="back-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali ke Manajemen Akun
+            </a>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+                <div>
+                    <h1 class="page-title">Tambah Administrator</h1>
+                    <p class="page-subtitle">Lengkapi formulir untuk mendaftarkan akun pengelola baru</p>
+                </div>
+                
+                <span class="status-badge" style="flex-shrink: 0;">
+                    <span class="status-dot"></span>
+                    Sesi Aktif
                 </span>
             </div>
         </div>
 
-        <div class="max-w-full bg-white rounded-[2rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-700 h-2.5 w-full"></div>
+        <!-- Form Card -->
+        <div class="form-card">
+            <div class="form-top-accent"></div>
             
-            <form action="{{ route('admin.register.store') }}" method="POST" class="p-8 lg:p-12">
+            <form action="{{ route('admin.register.store') }}" method="POST" class="form-content">
                 @csrf
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 8px;">
                     
-                    <div class="space-y-6">
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 mb-4">
-                            <span class="p-2 bg-slate-100 rounded-lg text-lg">👤</span>
+                    <!-- Kolom Kiri - Informasi Identitas -->
+                    <div>
+                        <h2 class="section-title">
+                            <span class="section-icon">👤</span>
                             Informasi Identitas
                         </h2>
                         
-                        <div>
-                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
-                            <input type="text" name="name" required 
-                                class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-slate-700 font-semibold text-lg"
-                                placeholder="Masukkan nama lengkap...">
+                        <div style="margin-bottom: 20px;">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" name="name" required class="form-input" placeholder="Masukkan nama lengkap...">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Alamat Email Instansi</label>
-                            <input type="email" name="email" required 
-                                class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-slate-700 font-semibold text-lg"
-                                placeholder="nama@binjai.go.id">
+                            <label class="form-label">Alamat Email Instansi</label>
+                            <input type="email" name="email" required class="form-input" placeholder="nama@binjai.go.id">
                         </div>
                     </div>
 
-                    <div class="space-y-6">
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 mb-4">
-                            <span class="p-2 bg-slate-100 rounded-lg text-lg">🔒</span>
+                    <!-- Kolom Kanan - Kredensial Keamanan -->
+                    <div>
+                        <h2 class="section-title">
+                            <span class="section-icon">🔒</span>
                             Kredensial Keamanan
                         </h2>
 
-                        <div>
-                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Kata Sandi Baru</label>
-                            <input type="password" name="password" required 
-                                class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-slate-700 font-semibold text-lg"
-                                placeholder="••••••••">
+                        <div style="margin-bottom: 20px;">
+                            <label class="form-label">Kata Sandi Baru</label>
+                            <input type="password" name="password" required class="form-input" placeholder="••••••••">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Ulangi Kata Sandi</label>
-                            <input type="password" name="password_confirmation" required 
-                                class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-slate-700 font-semibold text-lg"
-                                placeholder="••••••••">
+                            <label class="form-label">Ulangi Kata Sandi</label>
+                            <input type="password" name="password_confirmation" required class="form-input" placeholder="••••••••">
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-12 pt-8 border-t border-slate-50 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div class="text-sm text-slate-400 font-medium max-w-sm text-center md:text-left">
-
-                    </div>
-                    
-                    <div class="flex items-center gap-4 w-full md:w-auto">
-                        <button type="reset" class="px-8 py-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 transition-all">
-                            Reset Form
-                        </button>
-                        <button type="submit" 
-                            class="flex-1 md:flex-none px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200">
-                            Simpan Akun
-                        </button>
-                    </div>
+                <!-- Footer dengan Tombol -->
+                <div class="form-footer">
+                    <button type="reset" class="btn-reset">Reset Form</button>
+                    <button type="submit" class="btn-submit">Simpan Akun</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <style>
+        @media (max-width: 768px) {
+            .form-content > div:first-child {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .header-section > div:first-child {
+                flex-direction: column !important;
+            }
+        }
+    </style>
 </x-app-layout>

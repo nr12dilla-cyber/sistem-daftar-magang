@@ -10,50 +10,46 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// --- 1. HALAMAN SELAMAT DATANG (Landing Page) ---
+// --- 1. HALAMAN DEPAN (Gunakan Redirect jika sudah login) ---
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// --- 2. AREA USER / PENDAFTAR ---
+// --- 2. AREA PENDAFTAR (PUBLIC) ---
 Route::get('/daftar', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
-Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
-Route::post('/cek-status', [PendaftaranController::class, 'cekStatus'])->name('pendaftaran.cekStatus');
+Route::post('/pendaftaran/store', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
 
-
-// --- 3. AREA ADMIN (Wajib Login & Verifikasi) ---
+// --- 3. AREA ADMIN (PROTECTED) ---
+// Middleware 'auth' memastikan admin harus login dulu
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // MENU 1: Dashboard (Statistik & Grafik)
+    // DASHBOARD: Statistik & Grafik
     Route::get('/dashboard', [PendaftaranController::class, 'adminDashboard'])->name('dashboard');
 
-    // MENU 2: Data Pendaftar (Tabel Manajemen Lengkap)
-    Route::get('/dashboard/pendaftar', [PendaftaranController::class, 'dataPendaftar'])->name('admin.pendaftar');
+    // MANAJEMEN PENDAFTAR
+    Route::prefix('dashboard/pendaftar')->group(function () {
+        Route::get('/', [PendaftaranController::class, 'dataPendaftar'])->name('admin.pendaftar');
+        Route::get('/cetak', [PendaftaranController::class, 'cetak_pdf'])->name('pendaftaran.cetak');
+        
+        // Aksi: Update Status & Hapus
+        Route::patch('/status/{id}/{status}', [PendaftaranController::class, 'updateStatus'])->name('pendaftaran.updateStatus');
+        Route::delete('/hapus/{id}', [PendaftaranController::class, 'destroy'])->name('pendaftaran.destroy');
+    });
 
-    // MENU 3: Tambah Admin Baru
-    Route::get('/dashboard/tambah-admin', [PendaftaranController::class, 'formTambahAdmin'])->name('admin.register');
-    Route::post('/dashboard/tambah-admin', [PendaftaranController::class, 'simpanAdmin'])->name('admin.register.store');
+    // MANAJEMEN ADMIN (Internal Diskominfo)
+    Route::prefix('dashboard/admin')->group(function () {
+        Route::get('/kelola', [PendaftaranController::class, 'adminManage'])->name('admin.manage');
+        Route::get('/tambah', [PendaftaranController::class, 'formTambahAdmin'])->name('admin.register');
+        Route::post('/simpan', [PendaftaranController::class, 'simpanAdmin'])->name('admin.register.store');
+        Route::delete('/hapus/{id}', [PendaftaranController::class, 'hapusAdmin'])->name('admin.destroy');
+    });
 
-    // MENU 4: Kelola Admin
-    Route::get('/dashboard/kelola-admin', [PendaftaranController::class, 'adminManage'])->name('admin.manage');
-    
-    // FITUR BARU: Hapus Admin (Tambahkan ini)
-    Route::delete('/dashboard/kelola-admin/{id}', [PendaftaranController::class, 'hapusAdmin'])->name('admin.destroy');
-
-    // --- AKSI MANAJEMEN PENDAFTAR ---
-    
-    // Update Status: Menangani Terima & Tolak
-    Route::patch('/pendaftaran/status/{id}/{status}', [PendaftaranController::class, 'updateStatus'])
-        ->name('pendaftaran.updateStatus');
-
-    // Hapus Data Pendaftar
-    Route::delete('/pendaftaran/hapus/{id}', [PendaftaranController::class, 'destroy'])
-        ->name('pendaftaran.destroy');
-
-    // --- AREA PROFILE ADMIN ---
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // PROFILE SETTINGS
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'edit')->name('profile.edit');
+        Route::patch('/profile', 'update')->name('profile.update');
+        Route::delete('/profile', 'destroy')->name('profile.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

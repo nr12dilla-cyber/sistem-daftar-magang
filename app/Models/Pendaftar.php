@@ -14,11 +14,23 @@ class Pendaftar extends Model
     protected $fillable = [
         'nama', 
         'email', 
+        'nomor_wa',
+        'alamat',
+        'jenis_kelamin',
         'asal_sekolah', 
-        'nomor_wa', // <-- Tambahkan ini
         'posisi', 
+        'jumlah_anggota', 
         'foto', 
         'surat', 
         'status'
+    ];
+
+    /**
+     * Casting kolom foto menjadi array.
+     * Ini sangat penting agar Laravel otomatis mengubah JSON dari database
+     * menjadi Array PHP saat data dipanggil.
+     */
+    protected $casts = [
+        'foto' => 'array',
     ];
 }

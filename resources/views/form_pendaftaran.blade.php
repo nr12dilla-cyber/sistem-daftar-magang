@@ -8,16 +8,129 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { --blue-primary: #0066cc; --blue-dark: #004c99; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%); min-height: 100vh; }
-        h1, h2, label, button { font-family: 'Poppins', sans-serif; font-style: normal !important; }
-        .nav-custom { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 102, 204, 0.1); position: sticky; top: 0; z-index: 50; }
-        .logo-clean { mix-blend-mode: multiply; }
-        .card-combined { background: white; border-radius: 2rem; box-shadow: 0 25px 50px -12px rgba(0, 102, 204, 0.15); overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8); }
-        .header-gradient { background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-dark) 100%); }
-        .form-input, .form-select { width: 100%; background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem 1rem; transition: all 0.3s ease; }
-        .circle-logo-wrapper { background: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; width: 100px; height: 100px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); border: 4px solid rgba(255, 255, 255, 0.3); margin-bottom: 1.5rem; overflow: hidden; }
-        .logo-inner { height: 75%; width: auto; transform: scale(1.15); object-fit: contain; }
+        :root { 
+            --blue-primary: #1e5a8e; 
+            --blue-dark: #15436b; 
+            --blue-darker: #0d2f4d;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        
+        h1, h2, label, button { font-family: 'Poppins', sans-serif; }
+        
+        .nav-custom { 
+            background: white;
+            border-bottom: 1px solid #e9ecef; 
+            position: sticky; 
+            top: 0; 
+            z-index: 50; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .card-combined { 
+            background: white; 
+            border-radius: 24px; 
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); 
+            overflow: hidden; 
+            border: 1px solid #f1f3f5;
+        }
+        
+        .header-gradient { 
+            background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%); 
+            padding: 2.5rem 1rem; 
+            text-align: center; 
+        }
+        
+        .circle-logo-wrapper { 
+            background: white; 
+            border-radius: 50%; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 85px; 
+            height: 85px; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); 
+            border: 4px solid rgba(255, 255, 255, 0.3); 
+            margin-bottom: 1rem; 
+        }
+        
+        .form-input, .form-select { 
+            width: 100%; 
+            background-color: #f8f9fa; 
+            border: 2px solid #e9ecef; 
+            border-radius: 12px; 
+            padding: 0.875rem 1.125rem; 
+            transition: all 0.2s ease; 
+        }
+        
+        .form-input:focus { 
+            border-color: #1e5a8e; 
+            outline: none; 
+            background-color: white; 
+            box-shadow: 0 0 0 3px rgba(30, 90, 142, 0.1); 
+        }
+        
+        .submit-button { 
+            background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%); 
+            color: white; 
+            font-weight: 700; 
+            padding: 1.125rem; 
+            border-radius: 12px; 
+            width: 100%; 
+            transition: 0.2s; 
+            box-shadow: 0 4px 15px rgba(30, 90, 142, 0.4); 
+        }
+        
+        .submit-button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(30, 90, 142, 0.5); 
+        }
+        
+        /* Cek Status di Sudut */
+        .cek-status-corner {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 40;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f3f5;
+            max-width: 320px;
+        }
+        
+        .btn-check-status {
+            background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%);
+            color: white;
+            font-weight: 700;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            width: 100%;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(30, 90, 142, 0.3);
+        }
+        
+        .btn-check-status:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 90, 142, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .cek-status-corner {
+                position: relative;
+                top: 0;
+                right: 0;
+                max-width: 100%;
+                margin: 20px auto;
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col">
@@ -25,180 +138,244 @@
 <nav class="nav-custom">
     <div class="w-full px-6 md:px-10 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('images/logobinjai.png') }}" alt="Logo" class="h-12 w-auto logo-clean">
-            <div class="flex flex-col">
+            <img src="{{ asset('images/logobinjai.png') }}" alt="Logo" class="h-10 w-auto">
+            <div class="flex flex-col text-left">
                 <p class="font-extrabold text-slate-800 leading-none">DISKOMINFO</p>
                 <p class="text-[10px] font-bold text-blue-600 tracking-widest uppercase">Kota Binjai</p>
             </div>
         </div>
-        <a href="{{ url('/') }}" class="bg-blue-50 text-blue-700 px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-100 transition-all border border-blue-100">← Beranda</a>
+        <a href="{{ url('/') }}" class="bg-blue-50 text-blue-700 px-5 py-2 rounded-lg text-sm font-bold border border-blue-100 hover:bg-blue-100 transition">← Beranda</a>
     </div>
 </nav>
 
-<main class="flex-grow flex items-center justify-center px-4 py-12 mb-20">
-    <div class="max-w-5xl w-full card-combined">
-        <div class="header-gradient p-10 md:p-14 text-center text-white relative">
-            <div class="relative z-10 flex flex-col items-center">
-                <div class="circle-logo-wrapper">
-                    <img src="{{ asset('images/logobinjai.png') }}" alt="Logo Binjai" class="logo-inner logo-clean">
-                </div>
-                <h1 class="text-3xl md:text-5xl font-black mb-3 tracking-tight">Pendaftaran Magang Online</h1>
-                <p class="text-blue-100 font-medium text-sm md:text-lg max-w-2xl mx-auto opacity-95">
-                    Sistem Informasi Pendaftaran Magang Data Center Dinas Komunikasi dan Informatika Kota Binjai.
-                </p>
+<!-- Cek Status di Sudut Kanan (Desktop) / Atas Form (Mobile) -->
+<div class="cek-status-corner">
+    <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-3">
+        <span class="text-lg">🔍</span> Cek Status Pendaftaran
+    </h2>
+    <form action="{{ url()->current() }}" method="GET" class="space-y-2">
+        <input type="email" name="email_cek" required placeholder="Email anda..." class="form-input text-sm">
+        <button type="submit" class="btn-check-status">
+            PERIKSA STATUS
+        </button>
+    </form>
+</div>
+
+<main class="flex-grow flex items-center justify-center px-4 py-10">
+    <div class="max-w-4xl w-full card-combined">
+        <div class="header-gradient text-white flex flex-col items-center">
+            <div class="circle-logo-wrapper">
+                <img src="{{ asset('images/logobinjai.png') }}" alt="Logo Binjai" class="h-12 w-auto">
             </div>
+            <h1 class="text-2xl md:text-3xl font-black mb-1 tracking-tight">Pendaftaran Magang Online</h1>
+            <p class="text-blue-100 text-[10px] md:text-xs opacity-90 tracking-wide">Data Center Diskominfo Kota Binjai</p>
         </div>
 
-        <div class="flex flex-col md:flex-row">
-            <div class="md:w-1/3 bg-gradient-to-br from-slate-50 to-blue-50/30 p-8 border-b md:border-b-0 md:border-r border-slate-200/50">
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-2">
-                        <span class="flex items-center justify-center w-9 h-9 bg-blue-600 text-white rounded-xl text-sm shadow-lg">🔍</span>
-                        Cek Status Seleksi
-                    </h2>
+        <div class="p-8 md:p-12 space-y-10">
+
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true"><div class="w-full border-t border-slate-200"></div></div>
+                <div class="relative flex justify-center"><span class="bg-white px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Formulir Pendaftaran</span></div>
+            </div>
+
+            <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-2 block tracking-widest">Nama Lengkap Ketua Kelompok</label>
+                        <input type="text" name="nama" value="{{ old('nama') }}" required class="form-input" placeholder="Masukkan nama lengkap">
+                    </div>
+                    
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-2 block tracking-widest">Email Aktif</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="email@instansi.com">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-2 block tracking-widest">Nomor WhatsApp</label>
+                        <input type="tel" name="nomor_wa" value="{{ old('nomor_wa') }}" required class="form-input" placeholder="08xxxxxxxxxx">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-2 block tracking-widest">Asal Sekolah / Kampus</label>
+                        <input type="text" name="asal_sekolah" value="{{ old('asal_sekolah') }}" required class="form-input" placeholder="Contoh: Universitas Sumatera Utara">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-2 block tracking-widest">Bidang Magang</label>
+                        <select name="posisi" required class="form-select text-sm">
+                            <option value="">Pilih Bidang...</option>
+                            <option {{ old('posisi') == 'IKP (Informasi Komunikasi Publik)' ? 'selected' : '' }}>IKP (Informasi Komunikasi Publik)</option>
+                            <option {{ old('posisi') == 'APTIKA (Aplikasi Informatika)' ? 'selected' : '' }}>APTIKA (Aplikasi Informatika)</option>
+                            <option {{ old('posisi') == 'Statistik & Persandian' ? 'selected' : '' }}>Statistik & Persandian</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-2 block tracking-widest">Jumlah Personil (Maks. 10)</label>
+                        <input type="number" id="jumlah_anggota" name="jumlah_anggota" min="1" max="10" value="{{ old('jumlah_anggota', 1) }}" required class="form-input">
+                    </div>
+
+                    <div class="md:col-span-2 p-6 bg-slate-50 rounded-2xl border-2 border-slate-100 border-dashed space-y-6">
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-bold text-slate-400 block uppercase tracking-widest text-center">Pas Foto Anggota (Portrait 4x6)</label>
+                            <div id="container-foto-dinamis" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-1"></div>
+                        </div>
+
+                        <div class="w-full border-t border-slate-200"></div>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-bold text-slate-400 block uppercase tracking-widest text-center">Surat Pengantar Instansi (PDF)</label>
+                            <div id="preview-pdf-container" class="hidden max-w-sm mx-auto">
+                                <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-red-100 shadow-sm mb-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-red-500 text-white px-2 py-1 rounded text-[8px] font-bold uppercase">PDF</div>
+                                        <span id="pdf-name" class="text-[10px] font-bold text-slate-700 truncate max-w-[120px]">file.pdf</span>
+                                    </div>
+                                    <button type="button" id="btn-view-pdf" class="text-[8px] bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-lg border border-blue-100">LIHAT</button>
+                                </div>
+                            </div>
+                            <input type="file" name="surat" id="input-pdf" accept=".pdf" required class="text-[10px] text-slate-500 block w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                    </div>
                 </div>
-                <form action="{{ url()->current() }}" method="GET" class="space-y-3">
-                    <input type="email" name="email_cek" required placeholder="Email Anda..." class="form-input text-sm" value="{{ request('email_cek') }}">
-                    <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold text-sm hover:bg-black transition-all shadow-lg uppercase tracking-wider">Periksa Hasil</button>
-                </form>
 
-                @if(isset($hasilCek))
-                    <div class="mt-6 p-5 rounded-2xl border-2 bg-white shadow-sm border-blue-100 animate-pulse">
-                        <p class="text-[10px] font-bold uppercase text-slate-400 mb-1 tracking-widest">Status:</p>
-                        <p class="text-2xl font-black text-blue-600">{{ strtoupper($hasilCek->status) }}</p>
-                        <p class="text-xs font-bold text-slate-700 mt-2">{{ $hasilCek->nama }}</p>
-                    </div>
-                @endif
-            </div>
-
-            <div class="md:w-2/3 p-8 md:p-12 bg-white">
-                <h2 class="text-xl font-bold text-slate-800 mb-8 flex items-center gap-3">
-                    <span class="flex items-center justify-center w-9 h-9 bg-blue-600 text-white rounded-xl text-sm shadow-lg">📝</span>
-                    Formulir Pendaftaran
-                </h2>
-
-                <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="md:col-span-2">
-                            <label class="text-[11px] font-extrabold text-slate-500 uppercase mb-2 block tracking-wider">Nama Lengkap</label>
-                            <input type="text" name="nama" required class="form-input" placeholder="Nama lengkap pendaftar">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-extrabold text-slate-500 uppercase mb-2 block tracking-wider">Email</label>
-                            <input type="email" name="email" required class="form-input" placeholder="email@contoh.com">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-extrabold text-slate-500 uppercase mb-2 block tracking-wider">WhatsApp</label>
-                            <input type="tel" name="nomor_wa" required class="form-input" placeholder="08xxxxxxxxxx">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-[11px] font-extrabold text-slate-500 uppercase mb-2 block tracking-wider">Asal Sekolah / Kampus</label>
-                            <input type="text" name="asal_sekolah" required class="form-input" placeholder="Nama Instansi Pendidikan">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-[11px] font-extrabold text-slate-500 uppercase mb-2 block tracking-wider">Bidang Magang</label>
-                            <select name="posisi" required class="form-select">
-                                <option value="">-- Pilih Bidang --</option>
-                                <option>Bidang Informasi dan Komunikasi Publik (IKP)</option>
-                                <option>Bidang Aplikasi dan Informatika (APTIKA)</option>
-                                <option>Bidang Statistik dan Persandian</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="p-4 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-300 transition-all">
-                            <div class="flex justify-between items-center mb-3">
-                                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Pas Foto</label>
-                                <span class="text-[9px] text-blue-700 font-extrabold uppercase bg-blue-100 px-2 py-0.5 rounded shadow-sm">Max: 5MB</span>
-                            </div>
-                            <input type="file" name="foto" required class="text-xs w-full file:mr-3 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
-                            <p class="text-[8px] text-slate-400 mt-2 font-medium">* Format: JPG, PNG</p>
-                        </div>
-
-                        <div class="p-4 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-300 transition-all">
-                            <div class="flex justify-between items-center mb-3">
-                                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Surat Pengantar</label>
-                                <span class="text-[9px] text-blue-700 font-extrabold uppercase bg-blue-100 px-2 py-0.5 rounded shadow-sm">Max: 5MB</span>
-                            </div>
-                            <input type="file" name="surat" required class="text-xs w-full file:mr-3 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
-                            <p class="text-[8px] text-slate-400 mt-2 font-medium">* Format: PDF Saja</p>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-xl text-lg shadow-xl mt-4 hover:bg-blue-700 transition-all uppercase tracking-widest">
-                        Submit Pendaftaran
-                    </button>
-                </form>
-            </div>
+                <button type="submit" class="submit-button">
+                    Kirim Pendaftaran Sekarang →
+                </button>
+            </form>
         </div>
     </div>
 </main>
 
-<footer class="bg-white border-t border-slate-200 pt-12 pb-16">
-    <div class="max-w-5xl w-full mx-auto px-4">
-        <div class="flex flex-wrap justify-center gap-x-12 gap-y-6 text-slate-500 mb-10">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-blue-50 rounded-xl shadow-sm">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                </div>
-                <span class="text-[12px] font-bold tracking-wider uppercase">Jl. Jend. Sudirman No. 6, Binjai Kota</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-blue-50 rounded-xl shadow-sm">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                </div>
-                <span class="text-[12px] font-bold tracking-wider uppercase">kominfo@binjaikota.go.id</span>
-            </div>
-        </div>
-
-        <div class="flex flex-col items-center gap-3 border-t border-slate-100 pt-8 text-center">
-            <p class="text-slate-400 text-[10px] font-extrabold uppercase tracking-[0.4em]">
-                © 2026 Pemerintah Kota Binjai
-            </p>
-            <div class="flex items-center gap-4 text-slate-400 text-[9px] font-bold uppercase tracking-widest">
-                <span>Dinas Komunikasi dan Informatika</span>
-                <span class="text-blue-300 font-black">/</span>
-                <span>All Rights Reserved</span>
-            </div>
-        </div>
-    </div>
+<footer class="py-8 mt-auto">
+    <p class="text-slate-400 text-[9px] font-bold text-center uppercase tracking-[0.3em]">
+        © 2026 DISKOMINFO KOTA BINJAI
+    </p>
 </footer>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const mediumSwal = {
-            width: '28rem',
-            padding: '1.25rem',
-            customClass: {
-                title: 'text-xl font-bold',
-                htmlContainer: 'text-sm font-medium'
-            }
-        };
+    // --- KODE GENERATOR FORM FOTO & PDF ---
+    const inputJumlah = document.getElementById('jumlah_anggota');
+    const containerFoto = document.getElementById('container-foto-dinamis');
 
-        @if(session('success'))
+    function generatePhotoSlots() {
+        const jumlah = parseInt(inputJumlah.value) || 1;
+        containerFoto.innerHTML = ''; 
+        for (let i = 0; i < jumlah; i++) {
+            const slot = document.createElement('div');
+            slot.id = `slot-container-${i}`;
+            slot.className = "relative h-32 bg-white rounded-xl border-2 border-slate-200 border-dashed hover:border-blue-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center";
+            slot.innerHTML = `
+                <img id="prev-img-${i}" class="absolute inset-0 w-full h-full object-cover hidden z-10">
+                <button type="button" id="btn-delete-${i}" onclick="removePhoto(event, ${i})" class="absolute top-1 right-1 z-40 bg-red-500 text-white w-5 h-5 rounded-md shadow flex items-center justify-center hidden"><span class="text-[8px]">✕</span></button>
+                <div id="placeholder-icon-${i}" class="text-center z-0">
+                    <span class="text-lg">👤</span>
+                    <p class="text-[7px] font-bold text-slate-400 uppercase tracking-tighter">Anggota ${i + 1}</p>
+                </div>
+                <input type="file" name="foto[]" id="file-input-${i}" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer z-20" onchange="previewIndividualPhoto(this, ${i})">
+            `;
+            containerFoto.appendChild(slot);
+        }
+    }
+
+    function previewIndividualPhoto(input, index) {
+        const [file] = input.files;
+        if (file) {
+            const img = document.getElementById(`prev-img-${index}`);
+            const icon = document.getElementById(`placeholder-icon-${index}`);
+            const btnDel = document.getElementById(`btn-delete-${index}`);
+            const container = document.getElementById(`slot-container-${index}`);
+            img.src = URL.createObjectURL(file);
+            img.classList.remove('hidden');
+            icon.classList.add('hidden');
+            btnDel.classList.remove('hidden');
+            container.classList.replace('border-dashed', 'border-solid');
+            container.classList.add('border-blue-500');
+        }
+    }
+
+    function removePhoto(event, index) {
+        event.preventDefault();
+        event.stopPropagation();
+        const input = document.getElementById(`file-input-${index}`);
+        const img = document.getElementById(`prev-img-${index}`);
+        const icon = document.getElementById(`placeholder-icon-${index}`);
+        const btnDel = document.getElementById(`btn-delete-${index}`);
+        const container = document.getElementById(`slot-container-${index}`);
+        input.value = ""; img.src = "";
+        img.classList.add('hidden');
+        icon.classList.remove('hidden');
+        btnDel.classList.add('hidden');
+        container.classList.replace('border-solid', 'border-dashed');
+        container.classList.remove('border-blue-500');
+    }
+
+    inputJumlah.addEventListener('input', generatePhotoSlots);
+    window.addEventListener('DOMContentLoaded', generatePhotoSlots);
+
+    const inputPdf = document.getElementById('input-pdf');
+    const pdfNameDisplay = document.getElementById('pdf-name');
+    const previewPdfContainer = document.getElementById('preview-pdf-container');
+    const btnViewPdf = document.getElementById('btn-view-pdf');
+    let pdfUrl = null;
+
+    inputPdf.onchange = () => {
+        const [file] = inputPdf.files;
+        if (file) {
+            pdfNameDisplay.innerText = file.name;
+            previewPdfContainer.classList.remove('hidden');
+            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+            pdfUrl = URL.createObjectURL(file);
+        }
+    }
+    btnViewPdf.onclick = () => { if (pdfUrl) window.open(pdfUrl, '_blank'); }
+
+    // --- KODE NOTIFIKASI SWEETALERT (CEK STATUS, SUKSES, ERROR) ---
+    @if($statusCari)
+        @if($hasilCek)
             Swal.fire({
-                ...mediumSwal,
-                title: "Berhasil!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                confirmButtonColor: "#0066cc",
-                confirmButtonText: "Selesai"
+                icon: 'info',
+                title: 'Status Pendaftaran',
+                html: '<div class="p-6 bg-slate-50 rounded-2xl border-2 border-slate-100 text-left">' +
+                      '<p class="text-sm text-slate-500 mb-2">Email: <b>{{ $hasilCek->email }}</b></p>' +
+                      '<p class="text-[10px] uppercase font-bold text-blue-600 tracking-widest mb-1">Status Anda Saat Ini:</p>' +
+                      '<b class="text-3xl text-slate-800 uppercase font-black tracking-tight">{{ $hasilCek->status }}</b>' +
+                      '</div>',
+                confirmButtonColor: '#1e5a8e'
+            });
+        @else
+            Swal.fire({
+                icon: 'error',
+                title: 'Tidak Terdaftar',
+                text: 'Maaf, email "{{ request('email_cek') }}" tidak ditemukan dalam sistem.',
+                confirmButtonColor: '#ef4444'
             });
         @endif
+        
+        // Membersihkan URL agar notifikasi tidak muncul lagi saat refresh
+        if (typeof window.history.replaceState == 'function') {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    @endif
 
-        @if($errors->any())
-            Swal.fire({
-                ...mediumSwal,
-                title: "Opps!",
-                text: "{{ $errors->first() }}",
-                icon: "error",
-                confirmButtonColor: "#d33",
-                confirmButtonText: "Perbaiki"
-            });
-        @endif
-    });
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: "{{ session('success') }}",
+            confirmButtonColor: '#10b981'
+        });
+    @endif
+
+    @if($errors->any())
+        Swal.fire({
+            icon: 'warning',
+            title: 'Pendaftaran Gagal',
+            text: "{{ $errors->first() }}",
+            confirmButtonColor: '#f59e0b'
+        });
+    @endif
 </script>
 
 </body>

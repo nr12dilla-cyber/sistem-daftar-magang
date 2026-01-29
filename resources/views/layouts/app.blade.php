@@ -9,25 +9,27 @@
     <style>
         :root { 
             --sidebar-width: 280px; 
-            --primary-blue: #0066cc;
-            --primary-orange: #ff7800;
+            --blue-primary: #1e5a8e;
+            --blue-dark: #15436b;
+            --blue-darker: #0d2f4d;
+            --blue-light: #e3e8ff;
         }
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+            background: #f5f7fa;
         }
         
         .sidebar { 
             width: var(--sidebar-width); 
             height: 100vh; 
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            background: white;
             position: fixed; 
             padding: 2rem 1.5rem; 
             display: flex; 
             flex-direction: column;
-            box-shadow: 4px 0 24px rgba(0, 102, 204, 0.08);
-            border-right: 2px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            border-right: 1px solid #f1f3f5;
         }
         
         .sidebar-header {
@@ -40,28 +42,31 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 1rem;
+            /* Menambahkan wrapper dengan style sama seperti form */
+            background: white;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            box-shadow: 0 8px 20px rgba(30, 90, 142, 0.15);
+            border: 3px solid rgba(30, 90, 142, 0.1);
+            margin: 0 auto 1rem auto;
         }
         
-        /* UKURAN SEDANG (60px) */
         .logo-img {
-            height: 70px; 
+            height: 50px; 
             width: auto;
-            filter: drop-shadow(0 4px 6px rgba(255, 252, 252, 0.08));
             transition: all 0.3s ease;
         }
 
         .logo-img:hover {
-            transform: translateY(-3px);
-            filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.12));
+            transform: scale(1.05);
         }
         
         .sidebar-brand { 
             font-family: 'Poppins', sans-serif; 
             font-size: 1.4rem; 
             font-weight: 800; 
-            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--blue-primary);
             letter-spacing: -0.5px;
             text-transform: uppercase;
             line-height: 1.2;
@@ -69,42 +74,45 @@
         
         .sidebar-subtitle {
             font-size: 0.65rem;
-            color: #64748b;
-            font-weight: 700;
+            color: #718096;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 0.2rem;
+            margin-top: 0.3rem;
         }
 
         .nav-link { 
             display: flex; 
             align-items: center; 
-            padding: 0.8rem 1rem; 
-            color: #64748b; 
+            padding: 0.875rem 1rem; 
+            color: #6c757d; 
             text-decoration: none; 
             border-radius: 12px; 
             margin-bottom: 0.4rem; 
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             font-weight: 600;
             font-size: 0.9rem;
+            border: 2px solid transparent;
         }
         
         .nav-link:hover {
-            background: rgba(0, 102, 204, 0.06);
-            color: var(--primary-blue);
-            transform: translateX(5px);
+            background: #f8f9fa;
+            color: var(--blue-primary);
+            transform: translateX(3px);
+            border-color: rgba(30, 90, 142, 0.1);
         }
         
         .nav-link.active { 
-            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+            background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-dark) 100%);
             color: white;
-            box-shadow: 0 8px 15px rgba(0, 102, 204, 0.2);
+            box-shadow: 0 4px 15px rgba(30, 90, 142, 0.3);
+            border-color: var(--blue-primary);
         }
 
         .sidebar-footer {
             margin-top: auto;
             padding-top: 1.5rem;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #f1f3f5;
         }
 
         .logout-btn {
@@ -114,18 +122,93 @@
             gap: 10px;
             width: 100%;
             padding: 0.75rem;
-            background: #fff1f2;
-            color: #e11d48;
-            border-radius: 10px;
+            background: #fff5f5;
+            color: #e53e3e;
+            border-radius: 12px;
             font-weight: 700;
             transition: all 0.2s;
-            border: 1px solid rgba(225, 29, 72, 0.1);
+            border: none;
             cursor: pointer;
+            font-size: 0.85rem;
         }
 
         .logout-btn:hover {
-            background: #e11d48;
+            background: #e53e3e;
             color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-left: 16px;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(30, 90, 142, 0.1);
+            color: var(--blue-primary);
+            font-size: 9px;
+            font-weight: 700;
+            border-radius: 20px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-info {
+            margin-bottom: 16px;
+            padding: 0 8px;
+            text-align: center;
+        }
+
+        .admin-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2d3748;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Responsive untuk mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            main {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+        }
+
+        /* Scroll styling untuk sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f3f5;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--blue-primary);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--blue-dark);
         }
     </style>
 </head>
@@ -137,16 +220,16 @@
                 <img src="{{ asset('images/logobinjai.png') }}" alt="Logo Kota Binjai" class="logo-img">
             </div> 
             
-            <div class="sidebar-brand">Admin </div>
+            <div class="sidebar-brand">Admin</div>
             <div class="sidebar-subtitle">DISKOMINFO KOTA BINJAI</div>
         </div>
         
         <nav class="flex-grow">
-            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-[2px] ml-4 mb-4">Utama</p>
+            <p class="section-label">Menu Utama</p>
             
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <span class="mr-3">📊</span>
-                <span>Ringkasan</span>
+                <span>Dashboard</span>
             </a>
             
             <a href="{{ route('admin.pendaftar') }}" class="nav-link {{ request()->routeIs('admin.pendaftar') ? 'active' : '' }}">
@@ -158,14 +241,19 @@
                 <span class="mr-3">🛡️</span>
                 <span>Kelola Admin</span>
             </a>
+
+            <p class="section-label">Laporan</p>
+
+            <a href="{{ route('pendaftaran.cetak') }}" target="_blank" class="nav-link">
+                <span class="mr-3">🖨️</span>
+                <span>Cetak PDF</span>
+            </a>
         </nav>
         
         <div class="sidebar-footer">
-            <div class="mb-4 px-2 text-center">
-                <p class="text-xs font-bold text-slate-800">{{ Auth::user()->name ?? 'Administrator' }}</p>
-                <div class="inline-block px-2 py-0.5 bg-blue-100 text-[9px] text-blue-700 font-bold rounded-full mt-1">
-                    SUPER ADMIN
-                </div>
+            <div class="admin-info">
+                <p class="admin-name">{{ Auth::user()->name ?? 'Administrator' }}</p>
+                <div class="admin-badge">Super Admin</div>
             </div>
             
             <form method="POST" action="{{ route('logout') }}">
