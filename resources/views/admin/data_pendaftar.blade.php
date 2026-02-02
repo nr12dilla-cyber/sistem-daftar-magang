@@ -1,6 +1,5 @@
 <x-app-layout>
     <style>
-        /* ... (Style lainnya tetap sama) ... */
         .pagination-wrapper svg { width: 20px !important; height: 20px !important; display: inline-block; }
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .admin-container { background: #f5f7fa; min-height: 100vh; padding: 30px; font-family: 'Inter', sans-serif; }
@@ -26,42 +25,21 @@
         .profile-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; border: 2px solid #e9ecef; }
         .nomor-urut { font-weight: 700; color: #1e5a8e; font-size: 15px; }
 
-        /* MODAL FIX - KESAMPING */
         #galleryModal { 
             display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; 
             background: rgba(15, 43, 67, 0.85); backdrop-filter: blur(8px); align-items:center; justify-content:center; 
         }
-        .modal-content { 
-            background: white; width: 95%; max-width: 900px; border-radius: 20px; padding: 25px; 
-            position: relative; 
-        }
-        
-        /* Area Foto Scroll Ke Samping */
-        #galleryContent {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto; /* Aktifkan scroll horizontal */
-            padding-bottom: 15px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Mempercantik Scrollbar */
+        .modal-content { background: white; width: 95%; max-width: 900px; border-radius: 20px; padding: 25px; position: relative; }
+        #galleryContent { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
         #galleryContent::-webkit-scrollbar { height: 8px; }
         #galleryContent::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         #galleryContent::-webkit-scrollbar-thumb { background: #1e5a8e; border-radius: 10px; }
 
-        .foto-wrapper {
-            flex: 0 0 300px; /* Ukuran lebar tiap foto tetap 300px */
-            text-align: center;
-        }
-        .foto-wrapper img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 3px solid #f0f0f0;
-        }
+        .foto-wrapper { flex: 0 0 300px; text-align: center; }
+        .foto-wrapper img { width: 100%; height: 400px; object-fit: cover; border-radius: 12px; border: 3px solid #f0f0f0; }
+        
+        /* Pagination Styling */
+        .pagination-container { padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     </style>
 
     <div class="admin-container">
@@ -117,8 +95,8 @@
                                     <div class="dropdown-menu">
                                         @if($p->surat)<a href="{{ asset('uploads/surat/' . $p->surat) }}" target="_blank" class="menu-item">📄 Lihat Surat PDF</a>@endif
                                         <hr style="margin: 5px 0; border: 0; border-top: 1px solid #eee;">
-                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Diterima']) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="menu-item" style="color: #28a745;">✅ Set Diterima & WA</button></form>
-                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Ditolak']) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="menu-item" style="color: #dc3545;">❌ Set Ditolak & WA</button></form>
+                                        <form target="_blank" action="{{ route('pendaftaran.updateStatus', [$p->id, 'Diterima']) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="menu-item" style="color: #28a745;">✅ Set Diterima & WA</button></form>
+                                        <form target="_blank" action="{{ route('pendaftaran.updateStatus', [$p->id, 'Ditolak']) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="menu-item" style="color: #dc3545;">❌ Set Ditolak & WA</button></form>
                                         <form action="{{ route('pendaftaran.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Hapus data?')">@csrf @method('DELETE')<button type="submit" class="menu-item" style="color: #6c757d;">🗑️ Hapus Data</button></form>
                                     </div>
                                 </div>
@@ -128,15 +106,23 @@
                     </tbody>
                 </table>
             </div>
+            
+            <div class="pagination-container">
+                <div style="font-size: 13px; color: #666;">
+                    Showing {{ $pendaftars->firstItem() }} to {{ $pendaftars->lastItem() }} of {{ $pendaftars->total() }} entries
+                </div>
+                <div class="pagination-wrapper">
+                    {{ $pendaftars->links() }}
+                </div>
+            </div>
         </div>
-        </div>
+    </div>
 
     <div id="galleryModal" onclick="if(event.target == this) closeGallery()">
         <div class="modal-content">
             <button onclick="closeGallery()" style="float:right; border:none; background:#f0f2f5; width:30px; height:30px; border-radius:50%; cursor:pointer; font-weight:bold;">✕</button>
             <h3 id="modalTitle" style="margin-bottom:20px; font-weight:700; color:#1a202c;">Berkas Foto</h3>
-            <div id="galleryContent">
-                </div>
+            <div id="galleryContent"></div>
         </div>
     </div>
 
@@ -152,7 +138,6 @@
             const modal = document.getElementById('galleryModal');
             const content = document.getElementById('galleryContent');
             const title = document.getElementById('modalTitle');
-            
             title.innerText = "Berkas: " + nama;
             content.innerHTML = ""; 
 
@@ -160,34 +145,23 @@
                 fotos.forEach((foto, index) => {
                     const wrapper = document.createElement('div');
                     wrapper.className = "foto-wrapper";
-
                     const label = document.createElement('small');
                     label.innerText = "Foto Ke-" + (index + 1);
-                    label.style.display = "block";
-                    label.style.color = "#718096";
-                    label.style.marginBottom = "8px";
-                    label.style.fontWeight = "600";
-
+                    label.style = "display:block; color:#718096; margin-bottom:8px; font-weight:600;";
                     const img = document.createElement('img');
                     img.src = "/uploads/foto/" + foto;
-                    img.onerror = function() { 
-                        this.src = 'https://via.placeholder.com/400x500?text=Foto+Tidak+Ditemukan'; 
-                    };
-                    
+                    img.onerror = function() { this.src = 'https://via.placeholder.com/400x500?text=Error'; };
                     wrapper.appendChild(label);
                     wrapper.appendChild(img);
                     content.appendChild(wrapper);
                 });
             } else {
-                content.innerHTML = "<p style='color:gray; text-align:center; padding:20px;'>Tidak ada foto tersedia.</p>";
+                content.innerHTML = "<p style='color:gray; text-align:center; width:100%; padding:20px;'>Tidak ada foto.</p>";
             }
-            
             modal.style.display = "flex";
         }
 
-        function closeGallery() { 
-            document.getElementById('galleryModal').style.display = "none"; 
-        }
+        function closeGallery() { document.getElementById('galleryModal').style.display = "none"; }
 
         window.onclick = function(event) {
             if (!event.target.matches('.drop-btn')) {

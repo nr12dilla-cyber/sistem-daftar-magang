@@ -8,151 +8,163 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        body { font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #000; }
         .swiper { width: 100%; height: 100vh; }
-        .swiper-slide { position: relative; overflow: hidden; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%); }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.15; filter: blur(2px); }
+        .swiper-slide { position: relative; display: flex; align-items: center; overflow: hidden; }
         
-        .hero-content {
+        .slide-bg {
             position: absolute;
-            top: 50%;
-            left: 8%;
-            transform: translateY(-50%);
-            z-index: 10;
-            max-width: 850px;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
         }
 
-        /* --- NAVBAR --- */
-        .navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            padding: 12px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 4px 20px rgba(0, 102, 204, 0.1);
+        /* Daftar Gambar */
+        .bg-ikp { background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2000'); }
+        .bg-aptika { background-image: url('https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?q=80&w=2000'); }
+        .bg-statistik { background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426'); }
+
+        .swiper-slide::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%);
+            z-index: 1;
         }
 
-        .logo-img-box img { height: 52px; width: auto; }
-        .logo-text-main { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.25rem; background: linear-gradient(135deg, #0066cc 0%, #004c99 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
-        .logo-text-sub { color: #64748b; font-weight: 700; font-size: 0.75rem; letter-spacing: 1px; }
+        .hero-content { position: relative; z-index: 10; padding-left: 8%; max-width: 800px; }
+        .hero-title { font-family: 'Poppins', sans-serif; font-size: 5rem; font-weight: 800; line-height: 1.1; color: white; margin-bottom: 20px; text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .hero-description { font-size: 1.25rem; color: rgba(255, 255, 255, 0.95); max-width: 550px; margin-bottom: 30px; }
 
-        .btn-daftar { background: linear-gradient(135deg, #0066cc 0%, #004c99 100%); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
-        .btn-login { display: flex; flex-direction: column; align-items: center; font-size: 0.85rem; color: #334155; font-weight: 700; }
-        .btn-login svg { width: 26px; height: 26px; }
+        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); }
+        .badge-bidang { background: #1d4ed8; color: white; padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; text-transform: uppercase; }
 
-        .hero-title { font-family: 'Poppins', sans-serif; font-size: 4.8rem; font-weight: 950; line-height: 1.05; margin-bottom: 25px; background: linear-gradient(135deg, #0066cc 0%, #004c99 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -2px; }
-        .hero-description { font-size: 1.25rem; color: #334155; line-height: 1.8; max-width: 650px; margin-bottom: 35px; }
-
-        /* --- SIDE INFO: KEMBALI KE TENGAH --- */
+        /* SIDE INFO: Dengan efek transisi Fade */
         .side-info { 
-            position: absolute; 
-            top: 50%; /* Posisi di tengah secara vertikal */
+            position: fixed; 
             right: 8%; 
-            transform: translateY(-50%); /* Menjaga titik pusat kartu di tengah layar */
-            z-index: 20; 
+            top: 50%; 
+            transform: translateY(-50%); 
             display: flex; 
             flex-direction: column; 
             gap: 20px; 
-            max-width: 420px; 
+            z-index: 50;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        /* Class untuk menyembunyikan kartu */
+        .side-info.hidden-info {
+            opacity: 0;
+            visibility: hidden;
         }
 
         .info-card { 
             background: white; 
-            border-radius: 24px; 
-            padding: 25px; 
-            box-shadow: 0 15px 35px rgba(0, 102, 204, 0.08); 
-            border: 1px solid rgba(0, 102, 204, 0.1); 
+            padding: 22px; 
+            border-radius: 20px; 
+            width: 380px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
+            border-left: 6px solid #1d4ed8;
         }
+        
+        .info-card h4 { font-weight: 800; color: #1e3a8a; margin-bottom: 8px; font-size: 1rem; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .info-card p { font-size: 0.95rem; color: #475569; line-height: 1.6; }
 
-        .info-card h4 { font-weight: 900; color: #0066cc; margin-bottom: 8px; text-transform: uppercase; font-size: 1rem; }
-        .info-card p { font-size: 1rem; color: #475569; line-height: 1.5; }
+        .swiper-pagination-bullet { width: 12px; height: 12px; background: white !important; opacity: 0.5; }
+        .swiper-pagination-bullet-active { width: 35px; border-radius: 6px; opacity: 1 !important; }
 
-        /* --- PAGINATION --- */
-        .swiper-pagination-bullet { width: 12px; height: 12px; background: #0066cc !important; opacity: 0.3; }
-        .swiper-pagination-bullet-active { opacity: 1 !important; width: 35px; border-radius: 6px; }
-
-        @media (max-width: 1024px) {
-            .side-info { display: none; }
-        }
+        @media (max-width: 1024px) { .side-info { display: none; } .hero-title { font-size: 3.5rem; } }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="logo-container flex items-center gap-3">
-            <div class="logo-img-box">
-                <img src="{{asset('images/logobinjai.png')}}" alt="Logo">
-            </div>
-            <div class="hidden sm:flex flex-col">
-                <span class="logo-text-main">DISKOMINFO</span>
-                <span class="logo-text-sub">KOTA BINJAI</span>
+        <div class="flex items-center gap-3">
+            <img src="{{asset('images/logobinjai.png')}}" alt="Logo" class="h-12">
+            <div class="flex flex-col">
+                <span class="font-black text-blue-900 leading-none text-xl">DISKOMINFO</span>
+                <span class="text-xs font-bold text-gray-500 tracking-wider">KOTA BINJAI</span>
             </div>
         </div>
-        <div class="nav-actions flex items-center gap-6">
-            <a href="{{ route('pendaftaran.index') }}" class="btn-daftar"><span>📝</span> DAFTAR SEKARANG</a>
-            <a href="{{ route('login') }}" class="btn-login">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-                <span>Admin</span>
+        <div class="flex items-center gap-6">
+            <a href="{{ route('pendaftaran.index') }}" class="bg-blue-900 text-white px-7 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-blue-800 transition transform hover:-translate-y-1">
+                <span>📝</span> DAFTAR SEKARANG
+            </a>
+            <a href="{{ route('login') }}" class="flex flex-col items-center text-gray-600 hover:text-blue-900 transition font-bold">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                <span class="text-[10px]">Admin</span>
             </a>
         </div>
     </nav>
 
+    <div id="benefitCard" class="side-info">
+        <div class="info-card">
+            <h4><span>✨</span> BENEFIT PESERTA</h4>
+            <p>Dapatkan sertifikat resmi, bimbingan langsung dari mentor ahli, dan pengalaman kerja nyata di pemerintahan.</p>
+        </div>
+        <div class="info-card">
+            <h4><span>⏰</span> DURASI MAGANG</h4>
+            <p>Program magang berlangsung intensif dengan durasi fleksibel mulai dari 3 hingga 6 bulan.</p>
+        </div>
+    </div>
+
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
             <div class="swiper-slide">
-                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=1974" alt="IKP">
+                <div class="slide-bg bg-ikp"></div>
                 <div class="hero-content">
-                    <div class="bg-white shadow-lg inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-blue-600 mb-6">🎯 BIDANG IKP</div>
+                    <div class="badge-bidang">📢 BIDANG IKP</div>
                     <h1 class="hero-title">Informasi & <br> Komunikasi Publik</h1>
-                    <p class="hero-description">Menyebarkan informasi publik yang akurat dan transparan untuk masyarakat Kota Binjai.</p>
+                    <p class="hero-description">Menyebarkan informasi publik yang akurat, transparan, dan terpercaya bagi masyarakat Kota Binjai.</p>
                 </div>
             </div>
-
+            
             <div class="swiper-slide">
-                <img src="https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?auto=format&fit=crop&q=80&w=2070" alt="APTIKA">
+                <div class="slide-bg bg-aptika"></div>
                 <div class="hero-content">
-                    <div class="bg-white shadow-lg inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-blue-600 mb-6">💻 BIDANG APTIKA</div>
+                    <div class="badge-bidang">💻 BIDANG APTIKA</div>
                     <h1 class="hero-title">Aplikasi & <br> Informatika</h1>
-                    <p class="hero-description">Mendorong transformasi digital pemerintahan melalui pengembangan ekosistem Smart City.</p>
+                    <p class="hero-description">Mendorong transformasi digital melalui pengembangan ekosistem Smart City yang modern.</p>
                 </div>
             </div>
-
+            
             <div class="swiper-slide">
-                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2070" alt="STATISTIK">
+                <div class="slide-bg bg-statistik"></div>
                 <div class="hero-content">
-                    <div class="bg-white shadow-lg inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-blue-600 mb-6">📊 BIDANG STATISTIK</div>
+                    <div class="badge-bidang">📊 BIDANG STATISTIK</div>
                     <h1 class="hero-title">Statistik & <br> Persandian</h1>
                     <p class="hero-description">Mengolah data sektoral secara akurat untuk mendukung pengambilan kebijakan berbasis data.</p>
                 </div>
             </div>
         </div>
-
-        <div class="swiper-pagination" style="bottom: 50px !important; left: 8% !important; text-align: left !important; width: auto !important;"></div>
-
-        <div class="side-info">
-            <div class="info-card">
-                <h4>✨ BENEFIT PESERTA</h4>
-                <p>Sertifikat resmi, bimbingan mentor ahli, dan pengalaman kerja nyata.</p>
-            </div>
-            <div class="info-card">
-                <h4>⏰ DURASI MAGANG</h4>
-                <p>Program berlangsung intensif selama 3 hingga 6 bulan.</p>
-            </div>
-        </div>
+        <div class="swiper-pagination" style="bottom: 40px !important; text-align: left; padding-left: 8%;"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
+        const benefitCard = document.getElementById('benefitCard');
+
         var swiper = new Swiper(".mySwiper", {
             loop: true,
             effect: "fade",
-            speed: 1200,
+            fadeEffect: { crossFade: true },
+            speed: 1500,
             autoplay: { delay: 6000, disableOnInteraction: false },
             pagination: { el: ".swiper-pagination", clickable: true },
+            on: {
+                slideChange: function () {
+                    // realIndex 0 adalah slide pertama (IKP)
+                    if (this.realIndex === 0) {
+                        benefitCard.classList.remove('hidden-info');
+                    } else {
+                        benefitCard.classList.add('hidden-info');
+                    }
+                }
+            }
         });
     </script>
 </body>
