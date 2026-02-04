@@ -88,7 +88,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 3. DATA PENDAFTAR (DIARAHKAN KE FILE data_pendaftar.blade.php)
+     * 3. DATA PENDAFTAR
      */
     public function dataPendaftar()
     {
@@ -97,7 +97,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 4. MANAJEMEN ADMIN (DIARAHKAN KE FILE manage.blade.php)
+     * 4. MANAJEMEN ADMIN
      */
     public function adminManage()
     {
@@ -159,29 +159,36 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * DASHBOARD MAHASISWA (Hanya Profil & Status)
+     * DASHBOARD MAHASISWA
+     * Diperbaiki agar asal_sekolah terbaca sebagai asal_instansi
      */
     public function showDashboardMahasiswa()
     {
         $user = Auth::user();
         $pendaftar = Pendaftar::where('email', $user->email)->first();
         
-        // Halaman dashboard hanya menampilkan status, tidak butuh riwayat lagi
+        if ($pendaftar) {
+            // Kita tambahkan properti 'asal_instansi' secara manual agar cocok dengan file Blade Anda
+            $pendaftar->asal_instansi = $pendaftar->asal_sekolah;
+        }
+        
         return view('mahasiswa.dashboard', compact('user', 'pendaftar'));
     }
 
     /**
-     * MENU LAPORAN MAHASISWA (HALAMAN TERPISAH)
+     * MENU LAPORAN MAHASISWA
      */
     public function showLaporanMahasiswa()
     {
         $user = Auth::user();
         $pendaftar = Pendaftar::where('email', $user->email)->first();
         
-        // Proteksi: Hanya jika pendaftar ditemukan
         if (!$pendaftar) {
             return redirect()->route('welcome')->with('error', 'Data pendaftaran tidak ditemukan.');
         }
+
+        // Samakan juga di sini agar sidebar/header laporan tidak error
+        $pendaftar->asal_instansi = $pendaftar->asal_sekolah;
 
         $riwayatLaporan = LaporanHarian::where('user_id', $user->id)
                                         ->orderBy('tanggal', 'desc')
@@ -202,9 +209,6 @@ class PendaftaranController extends Controller
         return redirect()->back()->with('success', 'Laporan berhasil terkirim!');
     }
 
-    /**
-     * UPDATE LAPORAN (CRUD MAHASISWA)
-     */
     public function updateLaporan(Request $request, $id)
     {
         $request->validate(['tanggal' => 'required|date', 'kegiatan' => 'required|string']);
@@ -218,9 +222,6 @@ class PendaftaranController extends Controller
         return redirect()->back()->with('success', 'Laporan berhasil diperbarui!');
     }
 
-    /**
-     * HAPUS LAPORAN (CRUD MAHASISWA)
-     */
     public function hapusLaporan($id)
     {
         $laporan = LaporanHarian::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
@@ -229,9 +230,6 @@ class PendaftaranController extends Controller
         return redirect()->back()->with('success', 'Laporan berhasil dihapus!');
     }
 
-    /**
-     * 6. CETAK PDF
-     */
     public function cetak_pdf() 
     { 
         $pendaftars = Pendaftar::all(); 
