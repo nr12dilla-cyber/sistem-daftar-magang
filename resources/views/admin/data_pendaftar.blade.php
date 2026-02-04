@@ -97,22 +97,28 @@
                                         <hr style="margin: 5px 0; border: 0; border-top: 1px solid #eee;">
                                         
                                         @php
-                                            // Membersihkan nomor WA dari karakter aneh, tapi tetap membiarkan format 08...
+                                            // Membersihkan nomor WA dan konversi ke format internasional 62
                                             $nomorWA = preg_replace('/[^0-9]/', '', $p->nomor_wa);
+                                            if (str_starts_with($nomorWA, '0')) {
+                                                $nomorWA = '62' . substr($nomorWA, 1);
+                                            }
+                                            
+                                            $pesanDiterima = "Halo *" . $p->nama . "*, pendaftaran magang Anda di *Diskominfo Binjai* telah *DITERIMA*. Silakan menunggu informasi selanjutnya.";
+                                            $pesanDitolak = "Halo *" . $p->nama . "*, mohon maaf pendaftaran magang Anda di *Diskominfo Binjai* belum dapat kami terima saat ini.";
                                         @endphp
 
-                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Diterima']) }}" method="POST">
+                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Diterima']) }}" method="POST" id="form-terima-{{ $p->id }}">
                                             @csrf @method('PATCH')
-                                            <button type="submit" class="menu-item" style="color: #28a745;" 
-                                                onclick="window.open('https://api.whatsapp.com/send?phone={{ $nomorWA }}&text=Halo%20*{{ urlencode($p->nama) }}*,%20pendaftaran%20magang%20Anda%20di%20*Diskominfo%20Binjai*%20telah%20*DITERIMA*.%20Silakan%20menunggu%20informasi%20selanjutnya.', '_blank')">
+                                            <button type="button" class="menu-item" style="color: #28a745;" 
+                                                onclick="window.open('https://api.whatsapp.com/send?phone={{ $nomorWA }}&text={{ urlencode($pesanDiterima) }}', '_blank'); document.getElementById('form-terima-{{ $p->id }}').submit();">
                                                 ✅ Set Diterima & WA
                                             </button>
                                         </form>
 
-                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Ditolak']) }}" method="POST">
+                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Ditolak']) }}" method="POST" id="form-tolak-{{ $p->id }}">
                                             @csrf @method('PATCH')
-                                            <button type="submit" class="menu-item" style="color: #dc3545;" 
-                                                onclick="window.open('https://api.whatsapp.com/send?phone={{ $nomorWA }}&text=Halo%20*{{ urlencode($p->nama) }}*,%20mohon%20maaf%20pendaftaran%20magang%20Anda%20di%20*Diskominfo%20Binjai*%20belum%20dapat%20kami%20terima%20saat%20ini.', '_blank')">
+                                            <button type="button" class="menu-item" style="color: #dc3545;" 
+                                                onclick="window.open('https://api.whatsapp.com/send?phone={{ $nomorWA }}&text={{ urlencode($pesanDitolak) }}', '_blank'); document.getElementById('form-tolak-{{ $p->id }}').submit();">
                                                 ❌ Set Ditolak & WA
                                             </button>
                                         </form>
