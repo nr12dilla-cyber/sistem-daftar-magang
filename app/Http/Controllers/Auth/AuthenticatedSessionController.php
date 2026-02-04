@@ -23,22 +23,22 @@ class AuthenticatedSessionController extends Controller
      * Proses login (Handle an incoming authentication request).
      */
     public function store(LoginRequest $request): RedirectResponse
-{
-    $request->authenticate();
+    {
+        $request->authenticate();
 
-    $request->session()->regenerate();
+        $request->session()->regenerate();
 
-    $user = Auth::user();
-    $roleChoice = $request->input('role');
+        $user = Auth::user();
 
-    // Jika milih admin dan memang admin di DB
-    if ($roleChoice === 'admin' && $user->role === 'admin') {
-        return redirect()->route('dashboard');
-    } 
-    
-    // Jika login sebagai mahasiswa/peserta
-    return redirect()->route('dashboard.mahasiswa');
-}
+        // Logika otomatis: Cek role langsung dari database
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard');
+        } 
+        
+        // Jika bukan admin (mahasiswa/peserta), arahkan ke dashboard mahasiswa
+        return redirect()->route('dashboard.mahasiswa');
+    }
+
     /**
      * Proses Logout (Destroy an authenticated session).
      */

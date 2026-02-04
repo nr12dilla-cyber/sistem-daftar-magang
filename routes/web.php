@@ -16,29 +16,44 @@ Route::post('/pendaftaran/store', [PendaftaranController::class, 'store'])->name
 // --- 3. AREA PROTECTED (ADMIN & MAHASISWA) ---
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // Dashboard Admin
+    // --- FITUR LOGOUT ---
+    // Pastikan ini ada agar tombol logout di HTML berfungsi
+    Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])
+        ->name('logout');
+
+    // Dashboard Admin Utama
     Route::get('/dashboard', [PendaftaranController::class, 'adminDashboard'])->name('dashboard');
 
-    // Dashboard Mahasiswa
-    Route::get('/mahasiswa/dashboard', [PendaftaranController::class, 'showDashboardMahasiswa'])->name('dashboard.mahasiswa');
-    
-    // FITUR LAPORAN (TAMBAHKAN INI)
-    Route::post('/mahasiswa/laporan/simpan', [PendaftaranController::class, 'simpanLaporan'])->name('laporan.simpan');
+    // --- AREA MAHASISWA ---
+    Route::prefix('mahasiswa')->group(function () {
+        Route::get('/dashboard', [PendaftaranController::class, 'showDashboardMahasiswa'])->name('dashboard.mahasiswa');
+        Route::get('/laporan', [PendaftaranController::class, 'showLaporanMahasiswa'])->name('laporan.index');
+        
+        // Aksi CRUD Laporan
+        Route::post('/laporan/simpan', [PendaftaranController::class, 'simpanLaporan'])->name('laporan.simpan');
+        Route::put('/laporan/update/{id}', [PendaftaranController::class, 'updateLaporan'])->name('laporan.update');
+        Route::delete('/laporan/hapus/{id}', [PendaftaranController::class, 'hapusLaporan'])->name('laporan.hapus');
+    });
 
-    // MANAJEMEN PENDAFTAR
+    // --- AREA ADMIN (MANAJEMEN) ---
+    Route::prefix('dashboard/admin')->group(function () {
+        // Laporan Magang
+        Route::get('/laporan-magang', [PendaftaranController::class, 'adminLaporan'])->name('admin.laporan');
+        Route::patch('/laporan/status/{id}/{status}', [PendaftaranController::class, 'updateStatusLaporan'])->name('admin.laporan.status');
+
+        // Kelola Admin
+        Route::get('/kelola', [PendaftaranController::class, 'adminManage'])->name('admin.manage');
+        Route::get('/tambah', [PendaftaranController::class, 'formTambahAdmin'])->name('admin.register');
+        Route::post('/simpan', [PendaftaranController::class, 'simpanAdmin'])->name('admin.register.store');
+        Route::delete('/hapus/{id}', [PendaftaranController::class, 'hapusAdmin'])->name('admin.destroy');
+    });
+
+    // MANAJEMEN PENDAFTAR (Untuk Admin)
     Route::prefix('dashboard/pendaftar')->group(function () {
         Route::get('/', [PendaftaranController::class, 'dataPendaftar'])->name('admin.pendaftar');
         Route::get('/cetak', [PendaftaranController::class, 'cetak_pdf'])->name('pendaftaran.cetak');
         Route::patch('/status/{id}/{status}', [PendaftaranController::class, 'updateStatus'])->name('pendaftaran.updateStatus');
         Route::delete('/hapus/{id}', [PendaftaranController::class, 'destroy'])->name('pendaftaran.destroy');
-    });
-
-    // MANAJEMEN ADMIN
-    Route::prefix('dashboard/admin')->group(function () {
-        Route::get('/kelola', [PendaftaranController::class, 'adminManage'])->name('admin.manage');
-        Route::get('/tambah', [PendaftaranController::class, 'formTambahAdmin'])->name('admin.register');
-        Route::post('/simpan', [PendaftaranController::class, 'simpanAdmin'])->name('admin.register.store');
-        Route::delete('/hapus/{id}', [PendaftaranController::class, 'hapusAdmin'])->name('admin.destroy');
     });
 
     // PROFILE SETTINGS

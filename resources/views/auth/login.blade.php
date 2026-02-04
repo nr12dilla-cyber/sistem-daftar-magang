@@ -191,16 +191,6 @@
 
                 <form method="POST" action="{{ route('login') }}" class="space-y-5">
                     @csrf
-                    
-                    <div class="relative">
-                        <i data-lucide="user-cog" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
-                        <select name="role" class="form-input cursor-pointer pr-10" required>
-                            <option value="" disabled selected>Pilih Login Sebagai...</option>
-                            <option value="user">Peserta Magang</option>
-                            <option value="admin">Administrator</option>
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none"></i>
-                    </div>
 
                     <div class="relative">
                         <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>

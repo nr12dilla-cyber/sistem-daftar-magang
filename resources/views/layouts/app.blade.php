@@ -42,7 +42,6 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 1rem;
-            /* Menambahkan wrapper dengan style sama seperti form */
             background: white;
             border-radius: 50%;
             width: 80px;
@@ -176,7 +175,6 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Responsive untuk mobile */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -193,7 +191,6 @@
             }
         }
 
-        /* Scroll styling untuk sidebar */
         .sidebar::-webkit-scrollbar {
             width: 6px;
         }
@@ -235,6 +232,11 @@
             <a href="{{ route('admin.pendaftar') }}" class="nav-link {{ request()->routeIs('admin.pendaftar') ? 'active' : '' }}">
                 <span class="mr-3">👥</span>
                 <span>Data Pendaftar</span>
+            </a>
+
+            <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+                <span class="mr-3">📝</span>
+                <span>Laporan Magang</span>
             </a>
 
             <a href="{{ route('admin.manage') }}" class="nav-link {{ request()->routeIs('admin.manage') ? 'active' : '' }}">

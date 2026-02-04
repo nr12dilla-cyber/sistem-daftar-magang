@@ -9,7 +9,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .sidebar-item-active { background-color: #eff6ff; color: #2563eb; border-right: 4px solid #2563eb; }
-        html { scroll-behavior: smooth; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex">
@@ -17,10 +16,10 @@
 <aside class="w-64 bg-white border-r border-slate-200 min-h-screen sticky top-0 hidden md:flex flex-col">
     <div class="p-6 border-b border-slate-100">
         <div class="flex items-center gap-3">
-            <div class="bg-blue-600 p-2 rounded-lg text-white font-bold">DB</div>
+            <div class="bg-blue-600 p-2 rounded-lg text-white font-bold text-xl shadow-lg shadow-blue-100">M</div>
             <div class="flex flex-col">
-                <span class="font-bold text-slate-800 leading-none">Portal Magang</span>
-                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter italic">Diskominfo Binjai</span>
+                <span class="font-black text-slate-800 leading-none tracking-tight text-lg">Portal Magang</span>
+                <span class="text-[10px] text-slate-400 font-black uppercase tracking-widest italic mt-1">Diskominfo Binjai</span>
             </div>
         </div>
     </div>
@@ -32,37 +31,33 @@
         <a href="{{ route('dashboard.mahasiswa') }}" class="flex items-center gap-3 px-6 py-4 text-sm font-bold sidebar-item-active transition">
             <span>🏠</span> Dashboard
         </a>
-        
-        @php $statusObj = strtolower(trim($pendaftar->status)); @endphp
-        
-        @if($statusObj == 'diterima')
-        <a href="#form-laporan" class="flex items-center gap-3 px-6 py-4 text-sm font-bold text-slate-500 hover:bg-slate-50 transition">
+        @if(isset($pendaftar) && strtolower($pendaftar->status) == 'diterima')
+        <a href="{{ route('laporan.index') }}" class="flex items-center gap-3 px-6 py-4 text-sm font-bold text-slate-500 hover:bg-slate-50 transition">
             <span>📝</span> Laporan Harian
         </a>
         @endif
-        
-        <a href="#" class="flex items-center gap-3 px-6 py-4 text-sm font-bold text-slate-500 hover:bg-slate-50 transition">
-            <span>📂</span> Berkas Magang
-        </a>
     </nav>
 
     <div class="p-6 border-t border-slate-100">
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 py-3 rounded-xl text-xs font-black hover:bg-red-100 transition">
-                🚪 KELUAR SISTEM
-            </button>
-        </form>
+        <p class="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">v1.0 Mahasiswa</p>
     </div>
 </aside>
 
 <div class="flex-1">
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h2 class="text-sm font-bold text-slate-700 md:block hidden">Peserta: <span class="text-blue-600">{{ Auth::user()->name }}</span></h2>
-            <div class="flex items-center gap-4">
-                <a href="/" class="text-xs font-extrabold text-slate-500 hover:text-blue-600 transition">BERANDA</a>
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
+            <h2 class="text-sm font-bold text-slate-700 md:block hidden tracking-tight">
+                Peserta: <span class="text-blue-600 font-black">{{ Auth::user()->name }}</span>
+            </h2>
+            <div class="flex items-center gap-6">
+                <a href="/" class="text-xs font-black text-slate-500 hover:text-blue-600 transition tracking-widest uppercase">Beranda</a>
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin keluar?')" class="flex items-center gap-2 text-xs font-black text-red-500 hover:text-red-700 transition tracking-widest uppercase border-l pl-6 border-slate-200">
+                        <span>🚪</span> LOGOUT
+                    </button>
+                </form>
+                <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-100 ring-2 ring-white">
                     {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
             </div>
@@ -70,127 +65,46 @@
     </nav>
 
     <main class="max-w-5xl mx-auto px-6 py-10">
-        @if(session('success'))
-            <div class="mb-6 p-4 bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-2xl font-bold text-sm">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <div class="mb-10">
-            <h1 class="text-3xl font-black text-slate-800 tracking-tight">Selamat Datang! 👋</h1>
-            <p class="text-slate-500 text-sm mt-1">Berikut adalah ringkasan status pendaftaran magang Anda.</p>
+        <div class="mb-8">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight italic">Dashboard Peserta 🚀</h1>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="md:col-span-1 space-y-6">
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-center">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Status Pendaftaran</p>
-                    
-                    @if($statusObj == 'diterima')
-                        <div class="inline-flex flex-col items-center">
-                            <div class="bg-emerald-100 text-emerald-600 p-4 rounded-full mb-4 text-2xl">✅</div>
-                            <span class="text-emerald-600 font-black text-sm px-4 py-2 bg-emerald-50 rounded-xl border border-emerald-100 uppercase tracking-wide">Diterima</span>
-                        </div>
-                    @elseif($statusObj == 'ditolak')
-                        <div class="inline-flex flex-col items-center">
-                            <div class="bg-red-100 text-red-600 p-4 rounded-full mb-4 text-2xl">❌</div>
-                            <span class="text-red-600 font-black text-sm px-4 py-2 bg-red-50 rounded-xl border border-red-100 uppercase">Ditolak</span>
-                        </div>
-                    @else
-                        <div class="inline-flex flex-col items-center">
-                            <div class="bg-amber-100 text-amber-600 p-4 rounded-full mb-4 text-2xl">⏳</div>
-                            <span class="text-amber-600 font-black text-sm px-4 py-2 bg-amber-50 rounded-xl border border-amber-100 uppercase">Sedang Diproses</span>
-                        </div>
-                    @endif
-                    
-                    <p class="mt-8 text-[11px] text-slate-400 leading-relaxed italic">Mohon cek dashboard ini secara berkala.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 relative">
+                <div class="absolute top-0 right-0 p-8">
+                    @php
+                        $status = strtolower($pendaftar->status ?? 'pending');
+                        $color = $status == 'diterima' ? 'bg-green-100 text-green-600' : ($status == 'ditolak' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600');
+                    @endphp
+                    <span class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest {{ $color }}">
+                        {{ $pendaftar->status ?? 'PENDING' }}
+                    </span>
                 </div>
-            </div>
 
-            <div class="md:col-span-2 space-y-8">
-                @if($statusObj == 'diterima')
-                <div id="form-laporan" class="bg-white rounded-3xl shadow-sm border border-blue-200 overflow-hidden">
-                    <div class="bg-blue-600 px-8 py-5">
-                        <h2 class="font-black text-white text-xs uppercase tracking-widest">📝 Input Laporan Harian</h2>
+                <div class="space-y-10">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Nama Lengkap</p>
+                        <h2 class="text-3xl font-black text-slate-800">{{ Auth::user()->name }}</h2>
                     </div>
-                    <form action="{{ route('laporan.simpan') }}" method="POST" class="p-8 space-y-4">
-                        @csrf
-                        <div class="grid grid-cols-1 gap-4">
-                            <div>
-                                <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Tanggal Kegiatan</label>
-                                <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Deskripsi Kegiatan</label>
-                                <textarea name="kegiatan" rows="3" required placeholder="Jelaskan aktivitas magang Anda hari ini..."
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition shadow-lg shadow-blue-100">
-                            KIRIM LAPORAN SEKARANG
-                        </button>
-                    </form>
+
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Universitas / Sekolah</p>
+                        <h2 class="text-2xl font-black text-blue-600 uppercase tracking-tight">{{ $pendaftar->asal_instansi ?? 'INSTANSI BELUM TERDATA' }}</h2>
+                    </div>
+
+
+            <div class="bg-blue-600 p-8 rounded-[2.5rem] shadow-xl shadow-blue-100 text-white flex flex-col items-center justify-center text-center">
+                <div class="w-24 h-24 bg-white/20 rounded-[2rem] flex items-center justify-center text-4xl font-black mb-6 backdrop-blur-md border border-white/20">
+                    {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
+                <p class="text-blue-200 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Peserta Magang</p>
+                <h4 class="font-black text-xl mb-8 leading-tight">{{ Auth::user()->email }}</h4>
+                
+                @if(isset($pendaftar) && strtolower($pendaftar->status) == 'diterima')
+                    <a href="{{ route('laporan.index') }}" class="w-full bg-white text-blue-600 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-105 transition transform shadow-lg">
+                        📝 Mulai Laporan
+                    </a>
                 @endif
-
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-slate-50 px-8 py-5 border-b border-slate-200">
-                        <h2 class="font-black text-slate-700 text-xs uppercase tracking-widest">📋 Riwayat Aktivitas</h2>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="border-b border-slate-100">
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase">Tanggal</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase">Kegiatan</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase text-center">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                @forelse($riwayatLaporan as $laporan)
-                                <tr class="hover:bg-slate-50/50 transition">
-                                    <td class="px-8 py-5 text-xs font-bold text-slate-700 whitespace-nowrap">
-                                        {{ \Carbon\Carbon::parse($laporan->tanggal)->format('d/m/Y') }}
-                                    </td>
-                                    <td class="px-8 py-5 text-xs text-slate-600 font-medium">
-                                        {{ $laporan->kegiatan }}
-                                    </td>
-                                    <td class="px-8 py-5 text-center">
-                                        <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase {{ strtolower($laporan->status_laporan) == 'disetujui' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600' }}">
-                                            {{ $laporan->status_laporan }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="3" class="px-8 py-10 text-center text-slate-400 text-xs font-bold italic">
-                                        Belum ada laporan harian yang diinput.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-slate-50 px-8 py-5 border-b border-slate-200">
-                        <h2 class="font-black text-slate-700 text-xs uppercase tracking-widest">Informasi Utama</h2>
-                    </div>
-                    <div class="p-8">
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center py-3 border-b border-slate-50">
-                                <span class="text-sm text-slate-500 font-medium">Instansi/Sekolah</span>
-                                <span class="text-sm font-bold text-slate-800">{{ $pendaftar->asal_sekolah }}</span>
-                            </div>
-                            <div class="flex justify-between items-center py-3 border-b border-slate-50">
-                                <span class="text-sm text-slate-500 font-medium">Bidang Diminati</span>
-                                <span class="text-sm font-bold text-blue-600">{{ $pendaftar->posisi }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>

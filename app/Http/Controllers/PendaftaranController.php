@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf; 
 
 class PendaftaranController extends Controller
 {
@@ -91,10 +92,7 @@ class PendaftaranController extends Controller
      */
     public function dataPendaftar()
     {
-        // Sesuaikan nama variabel ke $pendaftars agar cocok dengan foreach di blade
         $pendaftars = Pendaftar::orderBy('created_at', 'desc')->paginate(10);
-        
-        // Memanggil file: admin/data_pendaftar.blade.php
         return view('admin.data_pendaftar', compact('pendaftars')); 
     }
 
@@ -104,8 +102,6 @@ class PendaftaranController extends Controller
     public function adminManage()
     {
         $admins = User::where('role', 'admin')->get();
-        
-        // Memanggil file: admin/manage.blade.php
         return view('admin.manage', compact('admins'));
     }
 
@@ -128,7 +124,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 5. DASHBOARD UTAMA (DIARAHKAN KE FILE dashboard.blade.php)
+     * 5. DASHBOARD UTAMA ADMIN
      */
     public function adminDashboard()
     {
@@ -146,7 +142,6 @@ class PendaftaranController extends Controller
             $dataGrafik['pending'][] = Pendaftar::where('status', 'Pending')->whereMonth('created_at', $m)->count();
         }
         
-        // Memanggil file: admin/dashboard.blade.php
         return view('admin.dashboard', compact('pendaftar', 'stats', 'dataGrafik'));
     }
 
@@ -163,30 +158,101 @@ class PendaftaranController extends Controller
         return redirect()->back()->with('success', 'Data dihapus!');
     }
 
+    /**
+     * DASHBOARD MAHASISWA (Hanya Profil & Status)
+     */
     public function showDashboardMahasiswa()
     {
         $user = Auth::user();
-        
-        // Mengambil data pendaftar terbaru berdasarkan email user yang login
         $pendaftar = Pendaftar::where('email', $user->email)->first();
         
-        // Mengambil riwayat laporan
+        // Halaman dashboard hanya menampilkan status, tidak butuh riwayat lagi
+        return view('mahasiswa.dashboard', compact('user', 'pendaftar'));
+    }
+
+    /**
+     * MENU LAPORAN MAHASISWA (HALAMAN TERPISAH)
+     */
+    public function showLaporanMahasiswa()
+    {
+        $user = Auth::user();
+        $pendaftar = Pendaftar::where('email', $user->email)->first();
+        
+        // Proteksi: Hanya jika pendaftar ditemukan
+        if (!$pendaftar) {
+            return redirect()->route('welcome')->with('error', 'Data pendaftaran tidak ditemukan.');
+        }
+
         $riwayatLaporan = LaporanHarian::where('user_id', $user->id)
-                                        ->orderBy('created_at', 'desc')
+                                        ->orderBy('tanggal', 'desc')
                                         ->get();
 
-        // Mengirimkan data ke view mahasiswa.dashboard
-        return view('mahasiswa.dashboard', compact('user', 'pendaftar', 'riwayatLaporan'));
+        return view('mahasiswa.laporan', compact('user', 'pendaftar', 'riwayatLaporan'));
     }
 
     public function simpanLaporan(Request $request)
     {
         $request->validate(['tanggal' => 'required|date', 'kegiatan' => 'required|string']);
-        LaporanHarian::create(['user_id' => Auth::id(), 'tanggal' => $request->tanggal, 'kegiatan' => $request->kegiatan, 'status_laporan' => 'Pending']);
-        return redirect()->back()->with('success', 'Laporan terkirim!');
+        LaporanHarian::create([
+            'user_id' => Auth::id(), 
+            'tanggal' => $request->tanggal, 
+            'kegiatan' => $request->kegiatan, 
+            'status_laporan' => 'Pending'
+        ]);
+        return redirect()->back()->with('success', 'Laporan berhasil terkirim!');
     }
 
-    public function cetak_pdf() { return "Feature Coming Soon"; }
+    /**
+     * UPDATE LAPORAN (CRUD MAHASISWA)
+     */
+    public function updateLaporan(Request $request, $id)
+    {
+        $request->validate(['tanggal' => 'required|date', 'kegiatan' => 'required|string']);
+        $laporan = LaporanHarian::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        
+        $laporan->update([
+            'tanggal' => $request->tanggal,
+            'kegiatan' => $request->kegiatan
+        ]);
+
+        return redirect()->back()->with('success', 'Laporan berhasil diperbarui!');
+    }
+
+    /**
+     * HAPUS LAPORAN (CRUD MAHASISWA)
+     */
+    public function hapusLaporan($id)
+    {
+        $laporan = LaporanHarian::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $laporan->delete();
+
+        return redirect()->back()->with('success', 'Laporan berhasil dihapus!');
+    }
+
+    /**
+     * 6. CETAK PDF
+     */
+    public function cetak_pdf() 
+    { 
+        $pendaftars = Pendaftar::all(); 
+        $pdf = Pdf::loadView('admin.cetak_pendaftar_pdf', compact('pendaftars'));
+        $pdf->setPaper('a4', 'portrait');
+        return $pdf->stream('Laporan_Pendaftaran_Magang_' . date('Y-m-d') . '.pdf');
+    }
+
     public function formTambahAdmin() { return redirect()->route('admin.manage'); }
     public function hapusAdmin($id) { User::findOrFail($id)->delete(); return redirect()->back(); }
+
+    public function adminLaporan()
+    {
+        $laporans = LaporanHarian::with('user')->orderBy('tanggal', 'desc')->paginate(15);
+        return view('admin.laporan_magang', compact('laporans'));
+    }
+
+    public function updateStatusLaporan($id, $status)
+    {
+        $laporan = LaporanHarian::findOrFail($id);
+        $laporan->update(['status_laporan' => $status]);
+        return redirect()->back()->with('success', 'Status laporan berhasil diperbarui menjadi ' . $status . '!');
+    }
 }
