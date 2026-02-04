@@ -31,18 +31,18 @@
         }
         .modal-content { background: white; width: 95%; max-width: 900px; border-radius: 20px; padding: 25px; position: relative; }
         #galleryContent { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-        #galleryContent::-webkit-scrollbar { height: 8px; }
-        #galleryContent::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        #galleryContent::-webkit-scrollbar-thumb { background: #1e5a8e; border-radius: 10px; }
-
         .foto-wrapper { flex: 0 0 300px; text-align: center; }
         .foto-wrapper img { width: 100%; height: 400px; object-fit: cover; border-radius: 12px; border: 3px solid #f0f0f0; }
-        
-        /* Pagination Styling */
         .pagination-container { padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     </style>
 
     <div class="admin-container">
+        @if(session('success'))
+            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 600;">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="header-section">
             <h2>Data Pendaftar</h2>
             <p>Kelola data pendaftaran Diskominfo Binjai</p>
@@ -95,9 +95,32 @@
                                     <div class="dropdown-menu">
                                         @if($p->surat)<a href="{{ asset('uploads/surat/' . $p->surat) }}" target="_blank" class="menu-item">📄 Lihat Surat PDF</a>@endif
                                         <hr style="margin: 5px 0; border: 0; border-top: 1px solid #eee;">
-                                        <form target="_blank" action="{{ route('pendaftaran.updateStatus', [$p->id, 'Diterima']) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="menu-item" style="color: #28a745;">✅ Set Diterima & WA</button></form>
-                                        <form target="_blank" action="{{ route('pendaftaran.updateStatus', [$p->id, 'Ditolak']) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="menu-item" style="color: #dc3545;">❌ Set Ditolak & WA</button></form>
-                                        <form action="{{ route('pendaftaran.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Hapus data?')">@csrf @method('DELETE')<button type="submit" class="menu-item" style="color: #6c757d;">🗑️ Hapus Data</button></form>
+                                        
+                                        @php
+                                            // Membersihkan nomor WA dari karakter aneh, tapi tetap membiarkan format 08...
+                                            $nomorWA = preg_replace('/[^0-9]/', '', $p->nomor_wa);
+                                        @endphp
+
+                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Diterima']) }}" method="POST">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="menu-item" style="color: #28a745;" 
+                                                onclick="window.open('https://api.whatsapp.com/send?phone={{ $nomorWA }}&text=Halo%20*{{ urlencode($p->nama) }}*,%20pendaftaran%20magang%20Anda%20di%20*Diskominfo%20Binjai*%20telah%20*DITERIMA*.%20Silakan%20menunggu%20informasi%20selanjutnya.', '_blank')">
+                                                ✅ Set Diterima & WA
+                                            </button>
+                                        </form>
+
+                                        <form action="{{ route('pendaftaran.updateStatus', [$p->id, 'Ditolak']) }}" method="POST">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="menu-item" style="color: #dc3545;" 
+                                                onclick="window.open('https://api.whatsapp.com/send?phone={{ $nomorWA }}&text=Halo%20*{{ urlencode($p->nama) }}*,%20mohon%20maaf%20pendaftaran%20magang%20Anda%20di%20*Diskominfo%20Binjai*%20belum%20dapat%20kami%20terima%20saat%20ini.', '_blank')">
+                                                ❌ Set Ditolak & WA
+                                            </button>
+                                        </form>
+
+                                        <form action="{{ route('pendaftaran.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Hapus data?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="menu-item" style="color: #6c757d;">🗑️ Hapus Data</button>
+                                        </form>
                                     </div>
                                 </div>
                             </td>
@@ -137,22 +160,17 @@
         function openGallery(nama, fotos) {
             const modal = document.getElementById('galleryModal');
             const content = document.getElementById('galleryContent');
-            const title = document.getElementById('modalTitle');
-            title.innerText = "Berkas: " + nama;
+            document.getElementById('modalTitle').innerText = "Berkas: " + nama;
             content.innerHTML = ""; 
 
             if (fotos && Array.isArray(fotos) && fotos.length > 0) {
                 fotos.forEach((foto, index) => {
                     const wrapper = document.createElement('div');
                     wrapper.className = "foto-wrapper";
-                    const label = document.createElement('small');
-                    label.innerText = "Foto Ke-" + (index + 1);
-                    label.style = "display:block; color:#718096; margin-bottom:8px; font-weight:600;";
-                    const img = document.createElement('img');
-                    img.src = "/uploads/foto/" + foto;
-                    img.onerror = function() { this.src = 'https://via.placeholder.com/400x500?text=Error'; };
-                    wrapper.appendChild(label);
-                    wrapper.appendChild(img);
+                    wrapper.innerHTML = `
+                        <small style="display:block; color:#718096; margin-bottom:8px; font-weight:600;">Foto Ke-${index + 1}</small>
+                        <img src="/uploads/foto/${foto}" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
+                    `;
                     content.appendChild(wrapper);
                 });
             } else {

@@ -4,13 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PendaftaranController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes - Portal Magang Binjai Smart City
-|--------------------------------------------------------------------------
-*/
-
-// --- 1. HALAMAN DEPAN (Gunakan Redirect jika sudah login) ---
+// --- 1. HALAMAN DEPAN ---
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
@@ -19,24 +13,27 @@ Route::get('/', function () {
 Route::get('/daftar', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
 Route::post('/pendaftaran/store', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
 
-// --- 3. AREA ADMIN (PROTECTED) ---
-// Middleware 'auth' memastikan admin harus login dulu
+// --- 3. AREA PROTECTED (ADMIN & MAHASISWA) ---
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // DASHBOARD: Statistik & Grafik
+    // Dashboard Admin
     Route::get('/dashboard', [PendaftaranController::class, 'adminDashboard'])->name('dashboard');
+
+    // Dashboard Mahasiswa
+    Route::get('/mahasiswa/dashboard', [PendaftaranController::class, 'showDashboardMahasiswa'])->name('dashboard.mahasiswa');
+    
+    // FITUR LAPORAN (TAMBAHKAN INI)
+    Route::post('/mahasiswa/laporan/simpan', [PendaftaranController::class, 'simpanLaporan'])->name('laporan.simpan');
 
     // MANAJEMEN PENDAFTAR
     Route::prefix('dashboard/pendaftar')->group(function () {
         Route::get('/', [PendaftaranController::class, 'dataPendaftar'])->name('admin.pendaftar');
         Route::get('/cetak', [PendaftaranController::class, 'cetak_pdf'])->name('pendaftaran.cetak');
-        
-        // Aksi: Update Status & Hapus
         Route::patch('/status/{id}/{status}', [PendaftaranController::class, 'updateStatus'])->name('pendaftaran.updateStatus');
         Route::delete('/hapus/{id}', [PendaftaranController::class, 'destroy'])->name('pendaftaran.destroy');
     });
 
-    // MANAJEMEN ADMIN (Internal Diskominfo)
+    // MANAJEMEN ADMIN
     Route::prefix('dashboard/admin')->group(function () {
         Route::get('/kelola', [PendaftaranController::class, 'adminManage'])->name('admin.manage');
         Route::get('/tambah', [PendaftaranController::class, 'formTambahAdmin'])->name('admin.register');

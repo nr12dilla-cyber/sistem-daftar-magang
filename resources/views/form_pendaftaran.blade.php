@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran Magang - Diskominfo Binjai</title>
+    <title>Pendaftaran Akun Magang - Diskominfo Binjai</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -15,11 +15,12 @@
         .card-combined { background: white; border-radius: 24px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid #f1f3f5; }
         .header-gradient { background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%); padding: 3rem 1rem; text-align: center; }
         .circle-logo-wrapper { background: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; width: 85px; height: 85px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); margin-bottom: 1.25rem; }
-        .form-input, .form-select { width: 100%; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem 1.125rem; transition: all 0.2s ease; font-size: 0.875rem; }
+        .form-input { width: 100%; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem 1.125rem; transition: all 0.2s ease; font-size: 0.875rem; }
         .form-input:focus { border-color: var(--blue-primary); outline: none; background-color: white; box-shadow: 0 0 0 4px rgba(30, 90, 142, 0.08); }
         .submit-button { background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%); color: white; font-weight: 700; padding: 1.125rem; border-radius: 14px; width: 100%; transition: 0.3s; box-shadow: 0 4px 15px rgba(30, 90, 142, 0.3); }
         .submit-button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30, 90, 142, 0.4); }
         .section-title-badge { background: #f1f5f9; color: #64748b; padding: 6px 16px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .foto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
     </style>
 </head>
 <body class="flex flex-col">
@@ -43,201 +44,234 @@
             <div class="circle-logo-wrapper">
                 <img src="{{ asset('images/logobinjai.png') }}" alt="Logo Binjai" class="h-12 w-auto">
             </div>
-            <h1 class="text-2xl md:text-4xl font-black mb-2 tracking-tight">Portal Magang Online</h1>
-            <p class="text-blue-100 text-xs md:text-sm opacity-80 font-medium">Lengkapi formulir di bawah untuk bergabung bersama kami</p>
+            <h1 class="text-2xl md:text-4xl font-black mb-2 tracking-tight">Formulir Pendaftaran Magang</h1>
+            <p class="text-blue-100 text-xs md:text-sm opacity-80 font-medium">Lengkapi data diri dan berkas untuk verifikasi</p>
         </div>
 
         <div class="p-8 md:p-12">
-            <div class="bg-blue-50/50 border border-blue-100 rounded-3xl p-6 md:p-8 mb-12">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div class="max-w-xs">
-                        <h2 class="text-lg font-extrabold text-blue-900 flex items-center gap-2"><span>🔍</span> Cek Status</h2>
-                        <p class="text-xs text-blue-700/70 mt-1 font-medium">Sudah mendaftar? Periksa progres data Anda di sini.</p>
+            <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" id="formPendaftaran">
+                @csrf
+                
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <span class="section-title-badge">Informasi Akun</span>
+                        <div class="h-[1px] bg-slate-100 flex-grow"></div>
                     </div>
-                    <form action="{{ url()->current() }}" method="GET" class="flex flex-col sm:flex-row gap-2 flex-grow max-w-md">
-                        <input type="email" name="email_cek" required placeholder="Masukkan email terdaftar..." class="form-input border-blue-200 focus:border-blue-500 bg-white">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-xs transition-all whitespace-nowrap shadow-lg shadow-blue-200">CEK DATA</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="space-y-8">
-                <div class="flex items-center gap-4">
-                    <span class="section-title-badge">Formulir Pendaftaran</span>
-                    <div class="h-[1px] bg-slate-100 flex-grow"></div>
-                </div>
-
-                <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                    @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Nama Lengkap Ketua Kelompok</label>
-                            <input type="text" name="nama" value="{{ old('nama') }}" required class="form-input" placeholder="Nama sesuai identitas">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Nama Lengkap Ketua</label>
+                            <input type="text" name="name" value="{{ old('name') }}" required class="form-input" placeholder="Masukkan nama lengkap Anda">
                         </div>
-                        
                         <div>
-                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Email Aktif</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Email Utama</label>
                             <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="contoh@mail.com">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Nomor WhatsApp</label>
-                            <input type="text" id="nomor_wa" name="nomor_wa" value="{{ old('nomor_wa') }}" required 
-                                   class="form-input" placeholder="08XX-XXXX-XXXX-XX" maxlength="15">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Asal Instansi Pendidikan</label>
-                            <input type="text" name="asal_sekolah" value="{{ old('asal_sekolah') }}" required class="form-input" placeholder="Nama Universitas / Sekolah">
+                            <input type="text" id="input_wa" name="phone" value="{{ old('phone') }}" required class="form-input" placeholder="08xxxxxxxxxx">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Pilihan Bidang</label>
-                            <select name="posisi" required class="form-select">
-                                <option value="">Pilih Bidang...</option>
-                                <option value="IKP (Informasi Komunikasi Publik)" {{ old('posisi') == 'IKP (Informasi Komunikasi Publik)' ? 'selected' : '' }}>IKP (Informasi Komunikasi Publik)</option>
-                                <option value="APTIKA (Aplikasi Informatika)" {{ old('posisi') == 'APTIKA (Aplikasi Informatika)' ? 'selected' : '' }}>APTIKA (Aplikasi Informatika)</option>
-                                <option value="Statistik & Persandian" {{ old('posisi') == 'Statistik & Persandian' ? 'selected' : '' }}>Statistik & Persandian</option>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Kata Sandi</label>
+                            <input type="password" name="password" required class="form-input" placeholder="Minimal 8 karakter">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Konfirmasi Kata Sandi</label>
+                            <input type="password" name="password_confirmation" required class="form-input" placeholder="Ulangi kata sandi">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <span class="section-title-badge">Detail Magang</span>
+                        <div class="h-[1px] bg-slate-100 flex-grow"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Asal Sekolah / Universitas</label>
+                            <input type="text" name="asal_sekolah" value="{{ old('asal_sekolah') }}" required class="form-input" placeholder="Contoh: Universitas Sumatera Utara">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Bidang Yang Diminati</label>
+                            <select name="posisi" required class="form-input">
+                                <option value="">Pilih Bidang</option>
+                                <option value="Aplikasi & Informatika (APTIKA)">Aplikasi & Informatika (APTIKA)</option>
+                                <option value="Informasi & Komunikasi Publik (IKP)">Informasi & Komunikasi Publik (IKP)</option>
+                                <option value="Statistik & Persandian">Statistik & Persandian</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Jumlah Anggota</label>
-                            <input type="number" id="jumlah_anggota" name="jumlah_anggota" min="1" max="10" value="{{ old('jumlah_anggota', 1) }}" required class="form-input">
-                        </div>
-
-                        <div class="md:col-span-2 p-8 bg-slate-50 rounded-3xl border-2 border-slate-200 border-dashed space-y-8">
-                            
-                            <div class="space-y-4">
-                                <div class="text-center">
-                                    <label class="text-xs font-bold text-slate-500 block uppercase tracking-widest">Unggah Pas Foto Anggota (4x6)</label>
-                                    <p class="text-[9px] text-blue-500 font-bold mt-1 uppercase tracking-tight">* JPG, PNG, JPEG | Maksimal 5MB per file</p>
-                                </div>
-                                <div id="container-foto-dinamis" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
-                            </div>
-
-                            <div class="h-[1px] bg-slate-200"></div>
-
-                            <div class="space-y-4">
-                                <div class="text-left">
-                                    <label class="text-xs font-bold text-slate-500 block uppercase tracking-widest">Surat Pengantar Instansi (PDF)</label>
-                                    <p class="text-[9px] text-red-500 font-bold mt-1 uppercase tracking-tight">* Wajib format PDF | Maksimal 5MB</p>
-                                </div>
-                                
-                                <div id="preview-pdf-container" class="hidden w-full flex justify-start">
-                                    <div class="flex items-center gap-3 p-3 bg-white rounded-2xl border border-blue-100 shadow-sm mb-3 w-fit">
-                                        <div class="flex items-center gap-3 border-r border-slate-100 pr-3">
-                                            <div class="bg-red-500 text-white px-2 py-1 rounded-lg text-[10px] font-black uppercase">PDF</div>
-                                            <span id="pdf-name" class="text-xs font-bold text-slate-600 truncate max-w-[150px]">file.pdf</span>
-                                        </div>
-                                        <button type="button" id="btn-view-pdf" class="text-[10px] bg-blue-50 text-blue-600 font-bold px-4 py-2 rounded-xl border border-blue-100 hover:bg-blue-100 transition">PRATINJAU</button>
-                                    </div>
-                                </div>
-                                <input type="file" name="surat" id="input-pdf" accept=".pdf" required class="text-xs text-slate-400 block w-full file:mr-4 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
-                            </div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Jumlah Anggota Kelompok</label>
+                            <input type="number" id="input_jumlah" name="jumlah_anggota" value="{{ old('jumlah_anggota', 1) }}" required class="form-input" min="1" max="10">
                         </div>
                     </div>
-                    <button type="submit" class="submit-button mt-4">KIRIM PENDAFTARAN SEKARANG →</button>
-                </form>
-            </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <span class="section-title-badge">Berkas Pendukung</span>
+                        <div class="h-[1px] bg-slate-100 flex-grow"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Surat Pengantar (PDF)</label>
+                            <div class="flex gap-2">
+                                <input type="file" name="surat" id="input_surat" required class="form-input text-xs flex-grow" accept=".pdf">
+                                <button type="button" id="btn_preview_pdf" class="hidden bg-blue-50 text-blue-600 border border-blue-200 px-6 rounded-xl text-[10px] font-black uppercase hover:bg-blue-100 transition">
+                                    LIHAT
+                                </button>
+                            </div>
+                            <p class="text-[9px] text-slate-400 mt-1">*Format PDF, Maks 2MB</p>
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-4 block tracking-wider">Foto Anggota (Pas Foto)</label>
+                            <div id="container_foto" class="foto-grid"></div>
+                            <p class="text-[9px] text-slate-400 mt-3">*Format JPG/PNG, Maks 2MB per file</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-8">
+                    <button type="submit" class="submit-button" id="btnSubmit">KIRIM PENDAFTARAN SEKARANG →</button>
+                </div>
+            </form>
         </div>
     </div>
 </main>
 
-<footer class="py-10">
-    <p class="text-slate-400 text-[10px] font-bold text-center uppercase tracking-[0.4em]">© 2026 DISKOMINFO KOTA BINJAI</p>
-</footer>
+<div id="modal_pdf" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl">
+        <div class="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
+            <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pratinjau Surat Pengantar</h3>
+            <button type="button" id="close_modal" class="text-slate-400 hover:text-red-500 text-2xl font-bold leading-none">&times;</button>
+        </div>
+        <div class="p-2 bg-slate-100">
+            <iframe id="pdf_viewer" class="w-full h-[70vh] rounded-lg shadow-inner" src=""></iframe>
+        </div>
+        <div class="p-4 flex justify-end bg-white border-t">
+            <button type="button" id="btn_hapus_pdf" class="bg-red-50 text-red-600 px-5 py-2 rounded-xl text-[10px] font-bold uppercase hover:bg-red-100 transition">Hapus & Ganti File</button>
+        </div>
+    </div>
+</div>
 
 <script>
-    // --- FORMAT OTOMATIS NOMOR WHATSAPP ---
-    const inputWA = document.getElementById('nomor_wa');
-    inputWA.addEventListener('input', function (e) {
-        let input = e.target.value.replace(/\D/g, '');
-        if (input.length > 13) input = input.substring(0, 13);
-        let formatted = "";
-        for (let i = 0; i < input.length; i++) {
-            if (i > 0 && i % 4 === 0) formatted += "-";
-            formatted += input[i];
+    const inputJumlah = document.getElementById('input_jumlah');
+    const inputWA = document.getElementById('input_wa');
+    const containerFoto = document.getElementById('container_foto');
+    const form = document.getElementById('formPendaftaran');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    // --- Logic Modal & PDF ---
+    const inputSurat = document.getElementById('input_surat');
+    const btnPreview = document.getElementById('btn_preview_pdf');
+    const modalPdf = document.getElementById('modal_pdf');
+    const pdfViewer = document.getElementById('pdf_viewer');
+    const closeModal = document.getElementById('close_modal');
+    const btnHapusPdf = document.getElementById('btn_hapus_pdf');
+
+    inputSurat.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file && file.type === "application/pdf") {
+            const fileURL = URL.createObjectURL(file);
+            pdfViewer.src = fileURL;
+            btnPreview.classList.remove('hidden');
+        } else if (file) {
+            Swal.fire({ icon: 'error', title: 'Format Salah', text: 'Pilih file berformat PDF' });
+            this.value = '';
+            btnPreview.classList.add('hidden');
         }
-        e.target.value = formatted;
     });
 
-    // --- FOTO LOGIC ---
-    const inputJumlah = document.getElementById('jumlah_anggota');
-    const containerFoto = document.getElementById('container-foto-dinamis');
-    function generatePhotoSlots() {
+    btnPreview.addEventListener('click', () => {
+        modalPdf.classList.remove('hidden');
+        modalPdf.classList.add('flex');
+    });
+
+    const tutupModal = () => {
+        modalPdf.classList.add('hidden');
+        modalPdf.classList.remove('flex');
+    };
+
+    closeModal.addEventListener('click', tutupModal);
+    modalPdf.addEventListener('click', (e) => { if (e.target === modalPdf) tutupModal(); });
+
+    btnHapusPdf.addEventListener('click', () => {
+        inputSurat.value = '';
+        pdfViewer.src = '';
+        btnPreview.classList.add('hidden');
+        tutupModal();
+    });
+
+    // --- Input Members Logic ---
+    inputJumlah.addEventListener('input', function() {
+        let val = parseInt(this.value);
+        if (val > 10) this.value = 10;
+        if (val < 1) this.value = 1;
+        updateFotoInputs();
+    });
+
+    inputWA.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 15) this.value = this.value.slice(0, 15);
+    });
+
+    // FUNGSI UTAMA: UPDATE FOTO DENGAN PREVIEW Keren
+    function updateFotoInputs() {
         const jumlah = parseInt(inputJumlah.value) || 1;
-        containerFoto.innerHTML = ''; 
-        for (let i = 0; i < jumlah; i++) {
-            const slot = document.createElement('div');
-            slot.className = "relative h-36 bg-white rounded-2xl border-2 border-slate-200 border-dashed hover:border-blue-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center";
-            slot.innerHTML = `
-                <img id="prev-img-${i}" class="absolute inset-0 w-full h-full object-cover hidden z-10">
-                <div id="placeholder-icon-${i}" class="text-center z-0">
-                    <span class="text-xl">👤</span>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">Anggota ${i + 1}</p>
+        containerFoto.innerHTML = '';
+        for (let i = 1; i <= jumlah; i++) {
+            const div = document.createElement('div');
+            div.className = 'flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 transition-all shadow-sm group';
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-[9px] font-black text-blue-600 uppercase tracking-tighter">Anggota ${i}</span>
+                    <button type="button" id="hapus_foto_${i}" onclick="resetSatuFoto(${i})" class="hidden text-red-500 text-[9px] font-bold uppercase hover:underline">Hapus</button>
                 </div>
-                <input type="file" name="foto[]" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer z-20" onchange="previewIndividualPhoto(this, ${i})">
+                
+                <div id="preview_wrapper_${i}" class="hidden w-full h-32 rounded-lg border border-slate-200 overflow-hidden bg-white mb-1 shadow-inner">
+                    <img id="img_preview_${i}" class="w-full h-full object-cover">
+                </div>
+
+                <input type="file" name="foto[]" id="file_input_${i}" required 
+                       onchange="prosesPreview(this, ${i})"
+                       class="text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer block w-full" 
+                       accept="image/*">
             `;
-            containerFoto.appendChild(slot);
+            containerFoto.appendChild(div);
         }
     }
-    function previewIndividualPhoto(input, index) {
-        const [file] = input.files;
-        if (file) {
-            if(file.size > 5 * 1024 * 1024) {
-                Swal.fire('Ukuran Terlalu Besar', 'Maksimal ukuran foto adalah 5MB', 'warning');
-                input.value = "";
-                return;
-            }
-            const img = document.getElementById(`prev-img-${index}`);
-            const icon = document.getElementById(`placeholder-icon-${index}`);
-            img.src = URL.createObjectURL(file);
-            img.classList.remove('hidden');
-            icon.classList.add('hidden');
-        }
-    }
-    inputJumlah.addEventListener('input', generatePhotoSlots);
-    window.addEventListener('DOMContentLoaded', generatePhotoSlots);
 
-    // --- PDF PREVIEW ---
-    const inputPdf = document.getElementById('input-pdf');
-    const previewPdfContainer = document.getElementById('preview-pdf-container');
-    const pdfNameDisplay = document.getElementById('pdf-name');
-    const btnViewPdf = document.getElementById('btn-view-pdf');
-    let pdfUrl = null;
-    inputPdf.onchange = () => {
-        const [file] = inputPdf.files;
-        if (file) {
-            if(file.size > 5 * 1024 * 1024) {
-                Swal.fire('Ukuran Terlalu Besar', 'Maksimal ukuran file PDF adalah 5MB', 'warning');
-                inputPdf.value = "";
-                previewPdfContainer.classList.add('hidden');
-                return;
+    // Fungsi Global agar bisa dipanggil HTML dinamis
+    window.prosesPreview = function(input, id) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(`img_preview_${id}`).src = e.target.result;
+                document.getElementById(`preview_wrapper_${id}`).classList.remove('hidden');
+                document.getElementById(`hapus_foto_${id}`).classList.remove('hidden');
+                input.classList.add('hidden'); // Sembunyikan input asli
             }
-            pdfNameDisplay.innerText = file.name;
-            previewPdfContainer.classList.remove('hidden');
-            pdfUrl = URL.createObjectURL(file);
+            reader.readAsDataURL(input.files[0]);
         }
     }
-    btnViewPdf.onclick = () => { if (pdfUrl) window.open(pdfUrl, '_blank'); }
 
-    // --- SWEETALERT ---
-    @if(session('success'))
-        Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonColor: '#1e5a8e' });
-    @endif
-    @if($errors->any())
-        Swal.fire({
-            icon: 'error',
-            title: 'Pendaftaran Gagal',
-            html: `<div class="text-left text-xs text-red-600 bg-red-50 p-3 rounded-lg"><ul>@foreach($errors->all() as $error)<li>• {{ $error }}</li>@endforeach</ul></div>`,
-            confirmButtonColor: '#1e5a8e'
-        });
-    @endif
-    @if(isset($statusCari) && $statusCari)
-        Swal.fire({
-            icon: '{{ $hasilCek ? "info" : "error" }}',
-            title: 'Status Pendaftaran',
-            html: `{!! $hasilCek ? '<div class="p-4 bg-slate-50 rounded-xl text-left border border-slate-200"><p class="text-[10px] text-slate-400 uppercase font-black">Status Sekarang:</p><p class="text-2xl font-black text-slate-800">'.$hasilCek->status.'</p></div>' : 'Email tidak ditemukan.' !!}`,
-            confirmButtonColor: '#1e5a8e'
-        });
-    @endif
+    window.resetSatuFoto = function(id) {
+        const input = document.getElementById(`file_input_${id}`);
+        input.value = '';
+        input.classList.remove('hidden');
+        document.getElementById(`preview_wrapper_${id}`).classList.add('hidden');
+        document.getElementById(`hapus_foto_${id}`).classList.add('hidden');
+    }
+
+    // Jalankan pertama kali
+    updateFotoInputs();
+
+    form.addEventListener('submit', function() {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = 'SEDANG MEMPROSES...';
+    });
 </script>
 </body>
 </html>

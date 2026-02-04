@@ -41,7 +41,6 @@
         .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); }
         .badge-bidang { background: #1d4ed8; color: white; padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; text-transform: uppercase; }
 
-        /* SIDE INFO: Dengan efek transisi Fade */
         .side-info { 
             position: fixed; 
             right: 8%; 
@@ -56,7 +55,6 @@
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
-        /* Class untuk menyembunyikan kartu */
         .side-info.hidden-info {
             opacity: 0;
             visibility: hidden;
@@ -95,8 +93,10 @@
                 <span>📝</span> DAFTAR SEKARANG
             </a>
             <a href="{{ route('login') }}" class="flex flex-col items-center text-gray-600 hover:text-blue-900 transition font-bold">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-                <span class="text-[10px]">Admin</span>
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span class="text-[10px] uppercase tracking-tighter">Login</span>
             </a>
         </div>
     </nav>
@@ -157,7 +157,6 @@
             pagination: { el: ".swiper-pagination", clickable: true },
             on: {
                 slideChange: function () {
-                    // realIndex 0 adalah slide pertama (IKP)
                     if (this.realIndex === 0) {
                         benefitCard.classList.remove('hidden-info');
                     } else {
