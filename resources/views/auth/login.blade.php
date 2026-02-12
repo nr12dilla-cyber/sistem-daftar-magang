@@ -211,7 +211,7 @@
                             <label for="remember" class="text-sm text-slate-600 font-medium cursor-pointer">Ingat saya</label>
                         </div>
                         @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline">Lupa sandi?</a>
+                            <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline"></a>
                         @endif
                     </div>
 

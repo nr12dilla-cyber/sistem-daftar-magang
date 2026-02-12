@@ -239,6 +239,12 @@
                 <span>Laporan Magang</span>
             </a>
 
+            {{-- MENU BARU: MONITORING ABSENSI --}}
+            <a href="{{ route('admin.absen.index') }}" class="nav-link {{ request()->routeIs('admin.absen.index') ? 'active' : '' }}">
+                <span class="mr-3">📅</span>
+                <span>Monitoring Absensi</span>
+            </a>
+
             <a href="{{ route('admin.manage') }}" class="nav-link {{ request()->routeIs('admin.manage') ? 'active' : '' }}">
                 <span class="mr-3">🛡️</span>
                 <span>Kelola Admin</span>

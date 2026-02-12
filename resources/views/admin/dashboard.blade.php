@@ -6,10 +6,8 @@
             --blue-darker: #0d2f4d;
         }
         
-        /* Import fonts yang sama */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap');
         
-        /* Container Utama */
         .dashboard-wrapper {
             font-family: 'Inter', sans-serif;
             position: relative;
@@ -25,7 +23,6 @@
             font-family: 'Poppins', sans-serif; 
         }
 
-        /* Lapis Konten */
         .content-layer {
             position: relative;
             z-index: 10;
@@ -35,15 +32,6 @@
             padding: 40px 24px;
         }
 
-        /* Card dengan shadow yang sama seperti form pendaftaran */
-        .glass-card {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid #f1f3f5;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Header card dengan gradient yang sama */
         .header-card {
             background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%);
             padding: 2rem;
@@ -67,7 +55,6 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
         }
 
-        /* Logo wrapper dengan style yang sama */
         .logo-wrapper { 
             background: white; 
             border-radius: 50%; 
@@ -80,22 +67,11 @@
             border: 3px solid rgba(255, 255, 255, 0.3); 
         }
 
-        /* Icon backgrounds dengan tema blue */
         .icon-bg-primary { background: #e3e8ff; }
         .icon-bg-warning { background: rgba(30, 90, 142, 0.1); }
         .icon-bg-success { background: rgba(30, 90, 142, 0.15); }
         .icon-bg-danger { background: rgba(30, 90, 142, 0.05); }
 
-        /* Text colors mengikuti tema */
-        .text-diskominfo {
-            color: #2d3748;
-        }
-
-        .text-blue-primary {
-            color: var(--blue-primary);
-        }
-
-        /* Chart container */
         .chart-card {
             background: white;
             border-radius: 24px;
@@ -104,7 +80,6 @@
             padding: 32px;
         }
 
-        /* Accent bar dengan warna primary */
         .accent-bar {
             width: 8px; 
             height: 24px; 
@@ -112,7 +87,6 @@
             border-radius: 4px;
         }
 
-        /* Responsive grid */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
@@ -129,7 +103,6 @@
     <div class="dashboard-wrapper">
         <div class="content-layer">
             
-            <!-- Header Card dengan gradient sama seperti form -->
             <div class="header-card">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 20px;">
@@ -148,7 +121,11 @@
                 </div>
             </div>
 
-            <!-- Stats Cards -->
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <div class="accent-bar" style="height: 18px;"></div>
+                <h3 style="font-weight: 700; font-size: 1rem; color: #4a5568; margin: 0;">Statistik Pendaftaran</h3>
+            </div>
+
             <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;">
                 @foreach([
                     'total' => ['label' => 'Total Peserta', 'icon' => '👥', 'bg' => 'icon-bg-primary'],
@@ -170,7 +147,6 @@
                 @endforeach
             </div>
 
-            <!-- Chart Card -->
             <div class="chart-card">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
                     <div class="accent-bar"></div>
@@ -195,7 +171,7 @@
                     { 
                         label: 'Diterima', 
                         data: @json($dataGrafik['diterima']), 
-                        backgroundColor: '#10b981', // Diubah dari biru ke hijau
+                        backgroundColor: '#10b981', 
                         borderRadius: 8,
                         borderSkipped: false
                     },

@@ -17,8 +17,9 @@
         .circle-logo-wrapper { background: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; width: 85px; height: 85px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); margin-bottom: 1.25rem; }
         .form-input { width: 100%; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem 1.125rem; transition: all 0.2s ease; font-size: 0.875rem; }
         .form-input:focus { border-color: var(--blue-primary); outline: none; background-color: white; box-shadow: 0 0 0 4px rgba(30, 90, 142, 0.08); }
-        .submit-button { background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%); color: white; font-weight: 700; padding: 1.125rem; border-radius: 14px; width: 100%; transition: 0.3s; box-shadow: 0 4px 15px rgba(30, 90, 142, 0.3); }
+        .submit-button { background: linear-gradient(135deg, #1e5a8e 0%, #15436b 100%); color: white; font-weight: 700; padding: 1.125rem; border-radius: 14px; width: 100%; transition: 0.3s; box-shadow: 0 4px 15px rgba(30, 90, 142, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .submit-button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30, 90, 142, 0.4); }
+        .submit-button:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         .section-title-badge { background: #f1f5f9; color: #64748b; padding: 6px 16px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .foto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
     </style>
@@ -134,7 +135,9 @@
                 </div>
 
                 <div class="pt-8">
-                    <button type="submit" class="submit-button" id="btnSubmit">KIRIM PENDAFTARAN SEKARANG →</button>
+                    <button type="submit" class="submit-button" id="btnSubmit">
+                        <span>KIRIM PENDAFTARAN SEKARANG →</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -163,7 +166,37 @@
     const form = document.getElementById('formPendaftaran');
     const btnSubmit = document.getElementById('btnSubmit');
 
-    // --- Logic Modal & PDF ---
+    // --- 1. NOTIFIKASI SWEETALERT (LOGIKA LARAVEL) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1e5a8e'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: "{{ session('error') }}",
+                confirmButtonColor: '#d33'
+            });
+        @endif
+
+        @if ($errors->any())
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian!',
+                text: 'Mohon periksa kembali inputan Anda.',
+                confirmButtonColor: '#1e5a8e'
+            });
+        @endif
+    });
+
+    // --- 2. LOGIC MODAL & PDF ---
     const inputSurat = document.getElementById('input_surat');
     const btnPreview = document.getElementById('btn_preview_pdf');
     const modalPdf = document.getElementById('modal_pdf');
@@ -204,7 +237,7 @@
         tutupModal();
     });
 
-    // --- Input Members Logic ---
+    // --- 3. INPUT ANGGOTA & WHATSAPP ---
     inputJumlah.addEventListener('input', function() {
         let val = parseInt(this.value);
         if (val > 10) this.value = 10;
@@ -214,10 +247,8 @@
 
     inputWA.addEventListener('input', function() {
         this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length > 15) this.value = this.value.slice(0, 15);
     });
 
-    // FUNGSI UTAMA: UPDATE FOTO DENGAN PREVIEW Keren
     function updateFotoInputs() {
         const jumlah = parseInt(inputJumlah.value) || 1;
         containerFoto.innerHTML = '';
@@ -229,11 +260,9 @@
                     <span class="text-[9px] font-black text-blue-600 uppercase tracking-tighter">Anggota ${i}</span>
                     <button type="button" id="hapus_foto_${i}" onclick="resetSatuFoto(${i})" class="hidden text-red-500 text-[9px] font-bold uppercase hover:underline">Hapus</button>
                 </div>
-                
                 <div id="preview_wrapper_${i}" class="hidden w-full h-32 rounded-lg border border-slate-200 overflow-hidden bg-white mb-1 shadow-inner">
                     <img id="img_preview_${i}" class="w-full h-full object-cover">
                 </div>
-
                 <input type="file" name="foto[]" id="file_input_${i}" required 
                        onchange="prosesPreview(this, ${i})"
                        class="text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer block w-full" 
@@ -243,7 +272,6 @@
         }
     }
 
-    // Fungsi Global agar bisa dipanggil HTML dinamis
     window.prosesPreview = function(input, id) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -251,7 +279,7 @@
                 document.getElementById(`img_preview_${id}`).src = e.target.result;
                 document.getElementById(`preview_wrapper_${id}`).classList.remove('hidden');
                 document.getElementById(`hapus_foto_${id}`).classList.remove('hidden');
-                input.classList.add('hidden'); // Sembunyikan input asli
+                input.classList.add('hidden');
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -265,12 +293,18 @@
         document.getElementById(`hapus_foto_${id}`).classList.add('hidden');
     }
 
-    // Jalankan pertama kali
     updateFotoInputs();
 
+    // --- 4. HANDLING SUBMIT (LOADING) ---
     form.addEventListener('submit', function() {
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = 'SEDANG MEMPROSES...';
+        btnSubmit.innerHTML = `
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>MEMPROSES DATA...</span>
+        `;
     });
 </script>
 </body>

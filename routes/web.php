@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PendaftaranController;
+// Bagian AbsensiController dihapus karena fungsinya ada di PendaftaranController
 use Illuminate\Support\Facades\Route;
 
 // --- 1. HALAMAN DEPAN ---
@@ -17,7 +18,6 @@ Route::post('/pendaftaran/store', [PendaftaranController::class, 'store'])->name
 Route::middleware(['auth', 'verified'])->group(function () {
     
     // --- FITUR LOGOUT ---
-    // Pastikan ini ada agar tombol logout di HTML berfungsi
     Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
@@ -33,6 +33,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/laporan/simpan', [PendaftaranController::class, 'simpanLaporan'])->name('laporan.simpan');
         Route::put('/laporan/update/{id}', [PendaftaranController::class, 'updateLaporan'])->name('laporan.update');
         Route::delete('/laporan/hapus/{id}', [PendaftaranController::class, 'hapusLaporan'])->name('laporan.hapus');
+
+        // --- PERBAIKAN: FITUR ABSENSI MAHASISWA (MENGARAH KE PendaftaranController) ---
+        Route::get('/absen', [PendaftaranController::class, 'showAbsensiMahasiswa'])->name('absen.index');
+        Route::post('/absen/masuk', [PendaftaranController::class, 'absenMasuk'])->name('absen.masuk');
+        Route::post('/absen/pulang', [PendaftaranController::class, 'absenPulang'])->name('absen.pulang');
     });
 
     // --- AREA ADMIN (MANAJEMEN) ---
@@ -46,6 +51,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tambah', [PendaftaranController::class, 'formTambahAdmin'])->name('admin.register');
         Route::post('/simpan', [PendaftaranController::class, 'simpanAdmin'])->name('admin.register.store');
         Route::delete('/hapus/{id}', [PendaftaranController::class, 'hapusAdmin'])->name('admin.destroy');
+
+        // --- PERBAIKAN: MONITORING ABSENSI (MENGARAH KE PendaftaranController) ---
+        Route::get('/monitoring-absen', [PendaftaranController::class, 'adminMonitoring'])->name('admin.absen.index');
     });
 
     // MANAJEMEN PENDAFTAR (Untuk Admin)
