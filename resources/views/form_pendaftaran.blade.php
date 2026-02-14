@@ -21,7 +21,7 @@
         .submit-button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30, 90, 142, 0.4); }
         .submit-button:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         .section-title-badge { background: #f1f5f9; color: #64748b; padding: 6px 16px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .foto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+        .foto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
     </style>
 </head>
 <body class="flex flex-col">
@@ -50,7 +50,7 @@
         </div>
 
         <div class="p-8 md:p-12">
-            <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" id="formPendaftaran">
+            <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" id="formPendaftaran">
                 @csrf
                 
                 <div class="space-y-6">
@@ -61,7 +61,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
                             <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Nama Lengkap Ketua</label>
-                            <input type="text" name="name" value="{{ old('name') }}" required class="form-input" placeholder="Masukkan nama lengkap Anda">
+                            <input type="text" name="name" id="nama_ketua" value="{{ old('name') }}" required class="form-input" placeholder="Masukkan nama lengkap Anda" oninput="sinkronNamaKetua()">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Email Utama</label>
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-6 mt-8">
                     <div class="flex items-center gap-4">
                         <span class="section-title-badge">Detail Magang</span>
                         <div class="h-[1px] bg-slate-100 flex-grow"></div>
@@ -103,14 +103,15 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block tracking-wider">Jumlah Anggota Kelompok</label>
-                            <input type="number" id="input_jumlah" name="jumlah_anggota" value="{{ old('jumlah_anggota', 1) }}" required class="form-input" min="1" max="10">
+                            <input type="number" id="input_jumlah" name="jumlah_anggota" value="{{ old('jumlah_anggota', 1) }}" required class="form-input" min="1" max="5">
+                            <p class="text-[9px] text-blue-500 mt-1">*Maksimal 5 anggota (termasuk ketua)</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-6 mt-8">
                     <div class="flex items-center gap-4">
-                        <span class="section-title-badge">Berkas Pendukung</span>
+                        <span class="section-title-badge">Berkas & Data Anggota</span>
                         <div class="h-[1px] bg-slate-100 flex-grow"></div>
                     </div>
                     
@@ -127,7 +128,7 @@
                         </div>
 
                         <div>
-                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-4 block tracking-wider">Foto Anggota (Pas Foto)</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase mb-4 block tracking-wider">Data Diri & Foto Anggota</label>
                             <div id="container_foto" class="foto-grid"></div>
                             <p class="text-[9px] text-slate-400 mt-3">*Format JPG/PNG, Maks 2MB per file</p>
                         </div>
@@ -139,8 +140,7 @@
                         <span>KIRIM PENDAFTARAN SEKARANG →</span>
                     </button>
                 </div>
-            </form>
-        </div>
+            </form> </div>
     </div>
 </main>
 
@@ -165,38 +165,25 @@
     const containerFoto = document.getElementById('container_foto');
     const form = document.getElementById('formPendaftaran');
     const btnSubmit = document.getElementById('btnSubmit');
+    const namaKetuaInput = document.getElementById('nama_ketua');
 
-    // --- 1. NOTIFIKASI SWEETALERT (LOGIKA LARAVEL) ---
+    function sinkronNamaKetua() {
+        const inputNama1 = document.getElementById('nama_anggota_1');
+        if (inputNama1) {
+            inputNama1.value = namaKetuaInput.value;
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: "{{ session('success') }}",
-                confirmButtonColor: '#1e5a8e'
-            });
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonColor: '#1e5a8e' });
         @endif
 
         @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#d33'
-            });
-        @endif
-
-        @if ($errors->any())
-            Swal.fire({
-                icon: 'warning',
-                title: 'Perhatian!',
-                text: 'Mohon periksa kembali inputan Anda.',
-                confirmButtonColor: '#1e5a8e'
-            });
+            Swal.fire({ icon: 'error', title: 'Gagal!', text: "{{ session('error') }}", confirmButtonColor: '#d33' });
         @endif
     });
 
-    // --- 2. LOGIC MODAL & PDF ---
     const inputSurat = document.getElementById('input_surat');
     const btnPreview = document.getElementById('btn_preview_pdf');
     const modalPdf = document.getElementById('modal_pdf');
@@ -228,7 +215,6 @@
     };
 
     closeModal.addEventListener('click', tutupModal);
-    modalPdf.addEventListener('click', (e) => { if (e.target === modalPdf) tutupModal(); });
 
     btnHapusPdf.addEventListener('click', () => {
         inputSurat.value = '';
@@ -237,10 +223,9 @@
         tutupModal();
     });
 
-    // --- 3. INPUT ANGGOTA & WHATSAPP ---
     inputJumlah.addEventListener('input', function() {
         let val = parseInt(this.value);
-        if (val > 10) this.value = 10;
+        if (val > 5) this.value = 5;
         if (val < 1) this.value = 1;
         updateFotoInputs();
     });
@@ -254,19 +239,34 @@
         containerFoto.innerHTML = '';
         for (let i = 1; i <= jumlah; i++) {
             const div = document.createElement('div');
-            div.className = 'flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 transition-all shadow-sm group';
+            div.className = 'flex flex-col gap-3 p-4 bg-white border border-slate-200 rounded-2xl hover:border-blue-300 transition-all shadow-sm';
+            
+            const labelText = (i === 1) ? 'Ketua Kelompok' : `Anggota ${i}`;
+            const readonlyAttr = (i === 1) ? 'readonly' : '';
+            const namaValue = (i === 1) ? namaKetuaInput.value : '';
+
             div.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <span class="text-[9px] font-black text-blue-600 uppercase tracking-tighter">Anggota ${i}</span>
-                    <button type="button" id="hapus_foto_${i}" onclick="resetSatuFoto(${i})" class="hidden text-red-500 text-[9px] font-bold uppercase hover:underline">Hapus</button>
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${labelText}</span>
+                    <button type="button" id="hapus_foto_${i}" onclick="resetSatuFoto(${i})" class="hidden text-red-500 text-[9px] font-bold uppercase hover:underline">Ganti Foto</button>
                 </div>
-                <div id="preview_wrapper_${i}" class="hidden w-full h-32 rounded-lg border border-slate-200 overflow-hidden bg-white mb-1 shadow-inner">
-                    <img id="img_preview_${i}" class="w-full h-full object-cover">
+                
+                <div class="space-y-2">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Nama Lengkap</label>
+                    <input type="text" name="nama_anggota[]" id="nama_anggota_${i}" value="${namaValue}" ${readonlyAttr} required 
+                           class="form-input !py-2 !text-xs bg-slate-50" placeholder="Nama Lengkap ${labelText}">
                 </div>
-                <input type="file" name="foto[]" id="file_input_${i}" required 
-                       onchange="prosesPreview(this, ${i})"
-                       class="text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer block w-full" 
-                       accept="image/*">
+
+                <div class="space-y-2">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Pas Foto</label>
+                    <div id="preview_wrapper_${i}" class="hidden w-full h-40 rounded-lg border border-slate-200 overflow-hidden bg-slate-100 mb-1 shadow-inner">
+                        <img id="img_preview_${id = i}" class="w-full h-full object-cover">
+                    </div>
+                    <input type="file" name="foto[]" id="file_input_${i}" required 
+                           onchange="prosesPreview(this, ${i})"
+                           class="text-[10px] file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold cursor-pointer block w-full" 
+                           accept="image/*">
+                </div>
             `;
             containerFoto.appendChild(div);
         }
@@ -295,7 +295,6 @@
 
     updateFotoInputs();
 
-    // --- 4. HANDLING SUBMIT (LOADING) ---
     form.addEventListener('submit', function() {
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = `

@@ -12,7 +12,7 @@ Route::get('/', function () {
 
 // --- 2. AREA PENDAFTAR (PUBLIC) ---
 Route::get('/daftar', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
-Route::post('/pendaftaran/store', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
+Route::post('/daftar', [PendaftaranController::class, 'store'])->name('pendaftaran.store'); // Ubah dari /pendaftaran/store ke /daftar
 
 // --- 3. AREA PROTECTED (ADMIN & MAHASISWA) ---
 Route::middleware(['auth', 'verified'])->group(function () {

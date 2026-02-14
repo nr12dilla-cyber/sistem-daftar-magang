@@ -31,7 +31,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * 2. SIMPAN PENDAFTARAN
+     * 2. SIMPAN PENDAFTARAN (DIPERBARUI: Max 5 & Simpan Nama Anggota)
      */
     public function store(Request $request)
     {
@@ -42,8 +42,10 @@ class PendaftaranController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'asal_sekolah' => 'required|string|max:255',
             'posisi' => 'required|string|in:Aplikasi & Informatika (APTIKA),Informasi & Komunikasi Publik (IKP),Statistik & Persandian',
-            'jumlah_anggota' => 'required|integer|min:1|max:10',
+            'jumlah_anggota' => 'required|integer|min:1|max:5', // Ubah max ke 5 sesuai request
             'surat' => 'required|file|mimes:pdf|max:2048',
+            'nama_anggota' => 'required|array', // Validasi input nama anggota
+            'nama_anggota.*' => 'required|string|max:255',
             'foto' => 'required|array',
             'foto.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -77,6 +79,7 @@ class PendaftaranController extends Controller
                 'asal_sekolah' => $request->asal_sekolah,
                 'posisi' => $request->posisi,
                 'jumlah_anggota' => $request->jumlah_anggota,
+                'nama_anggota' => json_encode($request->nama_anggota), // Simpan array nama anggota sebagai JSON
                 'foto' => json_encode($daftarFoto), 
                 'surat' => $namaSurat,
                 'status' => 'Pending',
@@ -198,7 +201,7 @@ class PendaftaranController extends Controller
     {
         $laporans = LaporanHarian::with('user')
                                 ->orderBy('tanggal', 'desc')
-                                ->paginate(10); // Diubah dari 15 ke 10
+                                ->paginate(10); 
         return view('admin.laporan_magang', compact('laporans'));
     }
 
@@ -304,7 +307,7 @@ class PendaftaranController extends Controller
         $allAbsensi = Absensi::with('user')
             ->orderBy('tanggal', 'desc')
             ->orderBy('jam_masuk', 'desc')
-            ->paginate(10); // Menambahkan pagination juga di monitoring
+            ->paginate(10); 
 
         return view('admin.monitoring_absensi', compact('allAbsensi'));
     }
